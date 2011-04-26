@@ -101,11 +101,7 @@ module SpamClassifier
   end
 
   def features
-    if overwritten?(:features, Array)
-      features
-    else
-      []
-    end + FEATURES
+    (overwritten?(:features, Array) ? spammable.features : []) + FEATURES
   end
 
   def features_present
