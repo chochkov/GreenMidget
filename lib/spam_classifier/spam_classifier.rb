@@ -1,7 +1,3 @@
-require 'spam_classification_index'
-require 'spam_classifier/constants'
-require 'spam_classifier/url_detection'
-
 module SpamClassifier
   include Constants
 
@@ -29,8 +25,6 @@ module SpamClassifier
     end
   end
 
-  # will be called manually using the admin spam interface.
-  # this is where the filter metrics are adjusted.
   def classify_as!(category)
     SpamClassificationIndex.fetch_all(words)
 
@@ -104,30 +98,24 @@ module SpamClassifier
     (overwritten?(:features, Array) ? spammable.features : []) + FEATURES
   end
 
-  def features_present
-    features.reject { |feature| not has_feature?(feature) }
+  def present_features
+    features.select { |feature| feature_present?(feature) }
   end
 
-  def features_
-    features - features_known
+  def missing_features
+    features - present_features
   end
 
-  # this would tell us if the feature given was found in the spammable
-  def has_feature?(feature)
+  def feature_present?(feature)
     method = :"#{feature}?"
     (overwritten?(method) ? spammable : self).send(method)
   end
 
   def pass_ham_heuristics?
     if overwritten?(:pass_ham_heuristics?)
-      return spammable.pass_ham_heuristics?
-    end
-
-    # TODO == what's going on with the WORD_LIMITS stuff !!
-    if (limit = WORD_LIMITS[spammable_class])
-      url_in_text? || email_in_text? || words.count > limit
+      spammable.pass_ham_heuristics?
     else
-      raise ArgumentError.new("Cannot classify type #{spammable_class.inspect}")
+      true
     end
   end
 
@@ -154,8 +142,10 @@ module SpamClassifier
   def text
     if overwritten?(:text)
       spammable.text
-    else
+    elsif @text
       @text
+    else
+      raise ArgumentError.new("Either a @spammable (object) or @text (string) instance variable should be defined before classification. #{@text.inspect}, #{@spammable.inspect}")
     end
   end
 
@@ -167,7 +157,7 @@ module SpamClassifier
     overwritten = spammable.respond_to?(method)
 
     if overwritten && expected_class
-      spammable.send(method).class == expected_class
+      spammable.send(method).is_a?(expected_class)
     else
       overwritten
     end
