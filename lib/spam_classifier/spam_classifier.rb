@@ -1,45 +1,6 @@
 module SpamClassifier
   include Constants
-
-  def classify
-    unless pass_ham_heuristics?
-      classify_as! :ham
-      return IS_HAM
-    end
-    unless pass_spam_heuristics?
-      classify_as! :spam
-      return IS_SPAM
-    end
-
-    SpamClassificationIndex.fetch_all(words)
-    log_classification
-
-    ratio = spam_ham_ratio
-    case
-    when ratio >= SPAM_THRESHOLD
-      IS_SPAM
-    when ratio >= 1.0
-      DUNNO
-    else
-      IS_HAM
-    end
-  end
-
-  def classify_as!(category)
-    SpamClassificationIndex.fetch_all(words)
-
-    Words.increment_many(words, category)
-    TrainingExamples.increment_all(category)
-
-    FEATURES.each do |feature|
-      if send("#{feature}?")
-        Features[feature].increment(category)
-      end
-    end
-
-    SpamClassificationIndex.write!
-    log_training
-  end
+  include PublicMethods
 
   private
 
@@ -78,21 +39,25 @@ module SpamClassifier
 
   end
 
-  def words
-    strip_external_links.scan(WORDS_SPLIT_REGEX).to_a.uniq.
-      map(&:downcase).
-      reject { |w| IGNORED_WORDS.include?(w) }
-  end
+  # ------ Default Heuristics --------
 
-  def known_words(category)
-    words.reject do |word|
-      Words[word][category].eql?(0.0)
+  def pass_ham_heuristics?
+    if overwritten?(:pass_ham_heuristics?)
+      spammable.pass_ham_heuristics?
+    else
+      true
     end
   end
 
-  def new_words(category)
-    words - known_words(category)
+  def pass_spam_heuristics?
+    if overwritten?(:pass_ham_heuristics?)
+      spammable.pass_ham_heuristics?
+    else
+      true
+    end
   end
+
+  # ------ Features --------
 
   def features
     (overwritten?(:features, Array) ? spammable.features : []) + FEATURES
@@ -111,22 +76,6 @@ module SpamClassifier
     (overwritten?(method) ? spammable : self).send(method)
   end
 
-  def pass_ham_heuristics?
-    if overwritten?(:pass_ham_heuristics?)
-      spammable.pass_ham_heuristics?
-    else
-      true
-    end
-  end
-
-  def pass_spam_heuristics?
-    if overwritten?(:pass_ham_heuristics?)
-      spammable.pass_ham_heuristics?
-    else
-      true
-    end
-  end
-
   def url_in_text?
     UrlDetection.new(text).any?
   end
@@ -135,9 +84,29 @@ module SpamClassifier
     text.scan(EMAIL_REGEX).size > 0
   end
 
+  # ------ Words --------
+
+  def words
+    strip_external_links.scan(WORDS_SPLIT_REGEX).to_a.uniq.
+      map(&:downcase).
+      reject { |w| IGNORED_WORDS.include?(w) }
+  end
+
+  def known_words(category)
+    words.reject do |word|
+      Words[word][category].eql?(0.0)
+    end
+  end
+
+  def new_words(category)
+    words - known_words(category)
+  end
+
   def strip_external_links
     text.gsub(EXTERNAL_LINK_REGEX, '')
   end
+
+  # ------ Accessors --------
 
   def text
     if overwritten?(:text)
@@ -162,6 +131,8 @@ module SpamClassifier
       overwritten
     end
   end
+
+  # ------ Probabilities Calculation --------
 
   # We use the ratio between Spam Probability and Ham Probability as decision criterion.
   # We do individual word-occurrence analysis as well as SpamClassifier::FEATURES list of features

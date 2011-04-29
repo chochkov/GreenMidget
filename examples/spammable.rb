@@ -4,7 +4,7 @@
 # 2. more methods could be added to this class, best as private
 #
 class Spammable
-  
+
   include SpamClassifier
 
   attr_accessor :text, :user, :spammable_class
@@ -25,6 +25,7 @@ class Spammable
     self.text = text
     self.user = user
     self.spammable_class = spammable_class
+    @spammable = self
   end
 
   # implement your own heuristics check. If that method is defined and returns true the object would be used
@@ -32,7 +33,7 @@ class Spammable
   def pass_ham_heuristics?
 
     if (limit = WORD_LIMITS[spammable_class])
-      
+
       # what happens with these methods
       url_in_text? || email_in_text? || words.count > limit
     else
