@@ -1,34 +1,34 @@
 require 'spec_helper'
 
-describe SpamClassificationIndex do
+describe SpamClassifier::SpamClassificationIndex do
   before(:each) do
-    SpamClassificationIndex.delete_all
+    SpamClassifier::SpamClassificationIndex.delete_all
   end
 
   describe "#fetch_all" do
     it "should empty cache before fetching" do
-      SpamClassificationIndex.fetch_all([ 'foo', 'bar' ])
-      SpamClassificationIndex.class_variable_get("@@cache")['bar'].should_not == nil
-      SpamClassificationIndex.fetch_all(['foo', 'newbar'])
-      SpamClassificationIndex.class_variable_get("@@cache")['bar'].should == nil
+      SpamClassifier::SpamClassificationIndex.fetch_all([ 'foo', 'bar' ])
+      SpamClassifier::SpamClassificationIndex.class_variable_get("@@cache")['bar'].should_not == nil
+      SpamClassifier::SpamClassificationIndex.fetch_all(['foo', 'newbar'])
+      SpamClassifier::SpamClassificationIndex.class_variable_get("@@cache")['bar'].should == nil
     end
     it "does a multi get on all words and keys" do
-      cache = SpamClassificationIndex.fetch_all([ 'foo', 'bar' ])
-      cache['foo'].should.eql? SpamClassificationIndex.class_eval{new('foo')}
+      cache = SpamClassifier::SpamClassificationIndex.fetch_all([ 'foo', 'bar' ])
+      cache['foo'].should.eql? SpamClassifier::SpamClassificationIndex.class_eval{new('foo')}
     end
     it "should fetch the system keys along with the given words" do
-      TrainingExamples.create!('training_examples_with_feature::words')
-      SpamClassificationIndex.fetch_all([])
-      cache = SpamClassificationIndex.class_variable_get("@@cache")
+      SpamClassifier::TrainingExamples.create!('training_examples_with_feature::words')
+      SpamClassifier::SpamClassificationIndex.fetch_all([])
+      cache = SpamClassifier::SpamClassificationIndex.class_variable_get("@@cache")
       cache['training_examples_with_feature::words'].should_not == nil
       cache.count.should == 1
     end
     it "the cache should be a hash; its keys should be strings" do
-      TrainingExamples.create!('training_examples_with_feature::words')
-      Features.create!('feature::url_in_text')
-      Words.create!('oneword')
-      SpamClassificationIndex.fetch_all([ 'oneword' ])
-      cache = SpamClassificationIndex.class_variable_get("@@cache")
+      SpamClassifier::TrainingExamples.create!('training_examples_with_feature::words')
+      SpamClassifier::Features.create!('feature::url_in_text')
+      SpamClassifier::Words.create!('oneword')
+      SpamClassifier::SpamClassificationIndex.fetch_all([ 'oneword' ])
+      cache = SpamClassifier::SpamClassificationIndex.class_variable_get("@@cache")
       cache.class.should.eql? Hash
       cache.count.should == 3
       cache.keys.each do |key|
@@ -37,23 +37,23 @@ describe SpamClassificationIndex do
     end
     it "should touch the data store only once per request" do
       pending('find a way to assert this - in the new refactoring it should touch it exactly three times!')
-      # SpamClassificationIndex.create!('word')
-      # SpamClassificationIndex.create!('other')
-      # SpamClassificationIndex.fetch_all([ 'word', 'other' ])
+      # SpamClassifier::SpamClassificationIndex.create!('word')
+      # SpamClassifier::SpamClassificationIndex.create!('other')
+      # SpamClassifier::SpamClassificationIndex.fetch_all([ 'word', 'other' ])
     end
   end
 
   describe "#increment" do
     it "should increment counts first in cache and write! to store only if explicitly called" do
       lambda {
-        SpamClassificationIndex['stuff'].increment(:spam)
-      }.should change { SpamClassificationIndex['stuff'][:spam] }.by(1)
+        SpamClassifier::SpamClassificationIndex['stuff'].increment(:spam)
+      }.should change { SpamClassifier::SpamClassificationIndex['stuff'][:spam] }.by(1)
 
-      SpamClassificationIndex.write!
+      SpamClassifier::SpamClassificationIndex.write!
 
       lambda {
-        SpamClassificationIndex['stuff'].increment(:spam)
-      }.should_not change { SpamClassificationIndex.find_by_key('stuff')[:spam] }
+        SpamClassifier::SpamClassificationIndex['stuff'].increment(:spam)
+      }.should_not change { SpamClassifier::SpamClassificationIndex.find_by_key('stuff')[:spam] }
     end
   end
 

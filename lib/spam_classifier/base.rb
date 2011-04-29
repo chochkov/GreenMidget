@@ -1,3 +1,8 @@
+# TODO : rework with File.join() for compatibility
+
+require_relative 'public_methods'
+require_relative 'logger'
+
 module SpamClassifier
   class Base
     include PublicMethods

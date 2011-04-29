@@ -50,7 +50,7 @@ class SpammableTest < SpamClassifier::Base
   private
 
   def cache
-    SpamClassificationIndex.fetch_all(words)
+    SpamClassifier::SpamClassificationIndex.fetch_all(words)
   end
 
 end
