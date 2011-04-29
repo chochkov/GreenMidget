@@ -1,8 +1,6 @@
 module SpamClassifier
   module PublicMethods
     def classify
-      pass_ham_heuristics? || pass_spam_heuristics?
-
       unless pass_ham_heuristics?
         classify_as! :ham
         return IS_HAM
@@ -32,6 +30,8 @@ module SpamClassifier
       Words.increment_many(words, category)
       TrainingExamples.increment_all(category)
 
+      # BIG TODO: account for custom defined features
+      # features.each do .. instead of FEATURES.each do ..
       FEATURES.each do |feature|
         if send("#{feature}?")
           Features[feature].increment(category)
