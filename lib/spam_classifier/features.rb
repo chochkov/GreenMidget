@@ -1,14 +1,9 @@
 module SpamClassifier
   class Features < SpamClassificationIndex
+    KEY_PREFIX = 'with_feature'
+    
     def self.[](feature)
-      #
-      # TODO: consider dropping this restriction for dynamic features addition.
-      # 
-      # unless SpamClassifier.supported_features.include?(feature)
-      #   raise ArgumentError.new("Unsupported feature given as an argument: #{feature.inspect}")
-      # end
-      # 
-      super("with_feature::#{feature}")
+      super("#{KEY_PREFIX}::#{feature}")
     end
 
     # Pr(feature | category)
@@ -23,11 +18,11 @@ module SpamClassifier
     # end
 
     def key
-      super.gsub(/^with_feature::/, '')
+      super.gsub(/^#{KEY_PREFIX}::/, '')
     end
 
     def self.fetch_all
-      features = all(:conditions => '`key` LIKE "with_feature::%"')
+      features = all(:conditions => "`key` LIKE #{KEY_PREFIX}::%'")
       features.inject({}) do |memo, feature|
         memo[feature.key] = feature
         memo
