@@ -9,11 +9,11 @@ module SpamClassifier
 
     # these are filtered out when scanning for words
     IGNORED_WORDS = %w(www com net biz org me)
-  
-    MIN_CHARACTERS_IN_WORD = 3
-    MAX_CHARACTERS_IN_WORD = 20 
 
-    WORDS_SPLIT_REGEX = Regexp.new("/\w{#{MIN_CHARACTERS_IN_WORD},#{MAX_CHARACTERS_IN_WORD}}/")
+    MIN_CHARACTERS_IN_WORD = 3
+    MAX_CHARACTERS_IN_WORD = 20
+
+    WORDS_SPLIT_REGEX = Regexp.new(/\w{#{MIN_CHARACTERS_IN_WORD},#{MAX_CHARACTERS_IN_WORD}}/)
 
     # all features used in the Baysian Filter in paralel with the words-occurrence probabilities
     FEATURES = %w(url_in_text email_in_text)

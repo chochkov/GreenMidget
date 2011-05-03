@@ -1,10 +1,13 @@
 # This class is only used for testing in the spam_classifier_spec
 #
 class SpammableTest < SpamClassifier::Base
+  
+  attr_accessor :text
+  
   ALPHABETIC_INDEX = ('a'..'z').to_a
 
-  def initialize(text = '', user = nil, spammable = Comment)
-    @text, @user, @spammable_class = text, user || User.create, spammable
+  def initialize(text = '')
+    self.text = text
   end
 
   def self.new_with_random_text(message_length=1, fixed_word_length = nil)
@@ -14,10 +17,8 @@ class SpammableTest < SpamClassifier::Base
       (fixed_word_length || rand(7)+3).times { word += ALPHABETIC_INDEX[rand(26)] }
       message << word unless message.include?(word)
     end
-    @text = message.join(' ')
-    @user = User.create
-    @spammable_class = Comment
-    SpamTest.new(@text, @user, @spammable_class)
+    text = message.join(' ')
+    SpammableTest.new(text)
   end
 
   def category_probability(category)

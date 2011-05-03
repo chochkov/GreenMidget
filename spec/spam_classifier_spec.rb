@@ -1,10 +1,11 @@
 require 'spec_helper'
 require File.expand_path(File.dirname(__FILE__) + '/spammable_test')
 
-describe SpamClassifier do
+describe SpamClassifier::Base do
+  include SpamClassifier
 
   before(:each) do
-    # SpamClassificationIndex.delete_all
+    SpamClassificationIndex.delete_all
     [
       {:key => "word::this",                                      :spam_count => 701,  :ham_count =>   11},
       {:key => "word::test",                                      :spam_count => 9,    :ham_count =>   71},
@@ -16,29 +17,23 @@ describe SpamClassifier do
       {:key => "word::zero",                                      :spam_count => 0,    :ham_count =>    0},
       {:key => "with_feature::url_in_text",                       :spam_count => 440,  :ham_count =>   40},
       {:key => "with_feature::email_in_text",                     :spam_count => 112,  :ham_count =>    9},
-      {:key => "with_feature::custom_username",                   :spam_count => 1,    :ham_count =>  110},
-      {:key => "with_feature::custom_avatar",                     :spam_count => 4,    :ham_count =>    9},
-      {:key => "with_feature::tracks_uploaded",                   :spam_count => 110,  :ham_count =>   43},
-      {:key => "training_examples_with_feature::words",           :spam_count => 1000, :ham_count => 1000},
+      {:key => "training_examples_with_feature::any",             :spam_count => 1000, :ham_count => 1000},
       {:key => "training_examples_with_feature::url_in_text",     :spam_count => 1000, :ham_count => 1000},
       {:key => "training_examples_with_feature::email_in_text",   :spam_count => 1000, :ham_count => 1000},
-      {:key => "training_examples_with_feature::custom_username", :spam_count => 1000, :ham_count => 1000},
-      {:key => "training_examples_with_feature::custom_avatar",   :spam_count => 1000, :ham_count => 1000},
-      {:key => "training_examples_with_feature::tracks_uploaded", :spam_count => 1000, :ham_count => 1000},
     ].each do |entry|
       key = entry[:key]
       instance = case
         when key =~ /^word::/ then
-          SpamClassifier::Words.create!(key)
-        when key =~ /^feature::/ then
-          SpamClassifier::Features.create!(key)
+          Words.create!(key)
+        when key =~ /^with_feature::/ then
+          Features.create!(key)
         when key =~ /^training_examples_with_feature::/ then
-          SpamClassifier::TrainingExamples.create!(key)
+          TrainingExamples.create!(key)
         else
           raise ArgumentError.new('Bad entry')
       end
       instance.update_attributes({ :spam_count => entry[:spam_count], :ham_count => entry[:ham_count] })
-      SpamClassifier::SpamClassificationIndex.write!
+      SpamClassificationIndex.write!
     end
   end
 
@@ -70,11 +65,11 @@ describe SpamClassifier do
     end
 
     it "considers 'rid goes dirty' spam" do
-      SpammableTest.new('rid goes dirty').spam_ham_ratio.should >= SpamClassifier::SPAM_THRESHOLD
+      SpammableTest.new('rid goes dirty').spam_ham_ratio.should >= SPAM_THRESHOLD
     end
 
     it "doesn't know whether 'zero goes rid' is spam or not" do
-      SpammableTest.new('zero goes rid').spam_ham_ratio.between?(1, SpamClassifier::SPAM_THRESHOLD).should be_true
+      SpammableTest.new('zero goes rid').spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
     end
 
     it "thinks of 'test boss@offshore.com' as more spam than just 'test'" do
@@ -87,51 +82,29 @@ describe SpamClassifier do
         should > SpammableTest.new('test').spam_ham_ratio
     end
 
-    it "thinks of 'test www.offshore.com' as more spam if said by someone with a standard username" do
-      standard_username_ratio = SpammableTest.new('test www.offshore.com').spam_ham_ratio
-      custom_username_ratio = SpammableTest.new('test www.offshore.com', User.create(:username => 'mybandname')).spam_ham_ratio
-      standard_username_ratio.should > custom_username_ratio
-    end
-
     it "will tolerate urls coming from known sites" do
       SpammableTest.new('test www.offshore.com').spam_ham_ratio.should >
       SpammableTest.new('test www.soundcloud.com').spam_ham_ratio
     end
 
-    it "will tolerate someone who uploaded an avatar" do
-      no_avatar_ratio = SpammableTest.new('test').spam_ham_ratio
-      avatared_user = User.new
-      avatared_user.avatars << Avatar.create
-      avatar_ratio = SpammableTest.new('test', avatared_user).spam_ham_ratio
-      no_avatar_ratio.should > avatar_ratio
-    end
-
-    it "should tolerate someone who uploaded a track" do
-      no_tracks_ratio = SpammableTest.new('test').spam_ham_ratio
-      someone_with_track = User.new
-      someone_with_track.tracks << Track.create(:bpm => 12, :permalink => 'iikyoku', :title => 'tit', :description => 'descr')
-      tracks_ratio = SpammableTest.new('test', someone_with_track).spam_ham_ratio
-      no_tracks_ratio.should > tracks_ratio
-    end
-
     it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
-      SpammableTest.new('zero newword heuristicspass').spam_ham_ratio.between?(1, SpamClassifier::SPAM_THRESHOLD).should be_true
+      SpammableTest.new('zero newword heuristicspass').spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
     end
 
     it "should say IS_SPAM if it has spam score for a message and doesn't have ham score for it" do
       a = SpammableTest.new('nosuchword nowordsuch heuristicspass')
       a.category_probability(:spam).should == 0.0
       a.category_probability(:ham).should == 0.0
-      a.spam_ham_ratio.between?(1, SpamClassifier::SPAM_THRESHOLD).should be_true
+      a.spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
       a.classify_as!(:spam)
-      a.spam_ham_ratio.should >= SpamClassifier::SPAM_THRESHOLD
+      a.spam_ham_ratio.should >= SPAM_THRESHOLD
     end
 
     it "should say IS_HAM if it has ham score for a message and doesn't have spam score for it" do
       a = SpammableTest.new('suchwordno nowordsuch heuristicspasss')
       a.category_probability(:spam).should == 0.0
       a.category_probability(:ham).should == 0.0
-      a.spam_ham_ratio.between?(1, SpamClassifier::SPAM_THRESHOLD).should be_true
+      a.spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
       a.classify_as!(:ham)
       a.spam_ham_ratio.should < 1
     end
@@ -144,10 +117,10 @@ describe SpamClassifier do
       }.should change { Words['zero'][:ham] }.by(1)
     end
     it "should increment the learning examples count for all features" do
-      SpamClassifier::FEATURES.each do |feature|
+      FEATURES.each do |feature|
         lambda {
           SpammableTest.new('zero').classify_as!(:ham)
-        }.should change { SpamClassifier::TrainingExamples[feature][:ham] }.by(1)
+        }.should change { TrainingExamples[feature][:ham] }.by(1)
       end
     end
   end
@@ -171,30 +144,30 @@ describe SpamClassifier do
   end
 
   describe "#pass_ham_heuristics?" do
-    it "shouldn't deal with comments having no url/email and less than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
-      SpammableTest.new('that seems quite alright', User.new, Comment).pass_ham_heuristics?.should_not be_true
-    end
-    it "should deal with comments having url/email independently of their word-count" do
-      SpammableTest.new('bye comment bad@wrong.com', User.new, Comment).pass_ham_heuristics?.should be_true
-    end
-    it "should deal with comments having more than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
-      SpammableTest.new_with_random_text(SpamClassifier::LOWER_WORDS_LIMIT_FOR_COMMENTS+1).pass_ham_heuristics?.should be_true
-    end
-    it "shouldn't deal with Posts having no url/email and less than LOWER_WORDS_LIMIT_FOR_POSTS words" do
-      SpammableTest.new('That is an example of a post that should not be dealt with by us', User.new, Post).pass_ham_heuristics?.should_not be_true
-    end
-    it "should deal with Posts having a url/email independently of their word-count" do
-      SpammableTest.new('bye post bad@wrong.com', User.new, Post).pass_ham_heuristics?.should be_true
-    end
-    it "should throw ArgumentError if given unexpected @spammable_class argument" do
-      lambda{
-        SpammableTest.new('anything', User.new, 'Posttt').pass_ham_heuristics?
-      }.should raise_error(ArgumentError)
-    end
-
-    it "should say DUNNO for items, which have words but none of these words has been seen by the filter" do
-      SpammableTest.new_with_random_text(SpamClassifier::LOWER_WORDS_LIMIT_FOR_COMMENTS+1, 10).classify.should == 0
-    end
+    # it "shouldn't deal with comments having no url/email and less than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
+    #   SpammableTest.new('that seems quite alright', User.new, Comment).pass_ham_heuristics?.should_not be_true
+    # end
+    # it "should deal with comments having url/email independently of their word-count" do
+    #   SpammableTest.new('bye comment bad@wrong.com', User.new, Comment).pass_ham_heuristics?.should be_true
+    # end
+    # it "should deal with comments having more than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
+    #   SpammableTest.new_with_random_text(LOWER_WORDS_LIMIT_FOR_COMMENTS+1).pass_ham_heuristics?.should be_true
+    # end
+    # it "shouldn't deal with Posts having no url/email and less than LOWER_WORDS_LIMIT_FOR_POSTS words" do
+    #   SpammableTest.new('That is an example of a post that should not be dealt with by us', User.new, Post).pass_ham_heuristics?.should_not be_true
+    # end
+    # it "should deal with Posts having a url/email independently of their word-count" do
+    #   SpammableTest.new('bye post bad@wrong.com', User.new, Post).pass_ham_heuristics?.should be_true
+    # end
+    # it "should throw ArgumentError if given unexpected @spammable_class argument" do
+    #   lambda{
+    #     SpammableTest.new('anything', User.new, 'Posttt').pass_ham_heuristics?
+    #   }.should raise_error(ArgumentError)
+    # end
+    #
+    # it "should say DUNNO for items, which have words but none of these words has been seen by the filter" do
+    #   SpammableTest.new_with_random_text(LOWER_WORDS_LIMIT_FOR_COMMENTS+1, 10).classify.should == 0
+    # end
   end
 
   describe "#known_words" do
@@ -219,7 +192,6 @@ describe SpamClassifier do
       # if SpamClassificationIndex.count(:spam) or SpamClassificationIndex.count(:ham) is 0.0 => throw an exception
       pending('todo')
     end
-
   end
 
 end

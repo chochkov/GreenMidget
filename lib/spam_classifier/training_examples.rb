@@ -1,24 +1,19 @@
 module SpamClassifier
   class TrainingExamples < SpamClassificationIndex
     def self.[](feature)
-      # unless SpamClassifier::FEATURES.include?(feature) || feature == 'words'
-      #   raise ArgumentError.new("Nonexistent feature given as an argument: #{feature.inspect}")
-      # end
+      record = super("training_examples_with_feature::#{feature}")
 
-      examples         = super("training_examples_with_feature::#{feature}")
-      examples_missing = (examples[:spam] * examples[:ham] == 0)
-
-      if examples_missing && (feature == 'words')
+      if record.no_examples? && (feature == 'any')
         raise ZeroDivisionError.new('Training examples must be provided for both spam and ham messages before classification')
-      elsif examples_missing
-        self['words']
+      elsif record.no_examples?
+        self['any']
       else
-        examples
+        record
       end
     end
 
     def self.with_words
-      self['words']
+      self['any']
     end
 
     # examples in category v.s. all examples
@@ -27,7 +22,7 @@ module SpamClassifier
     end
 
     def self.probability_for(category)
-      self['words'].probability_for(category)
+      self['any'].probability_for(category)
     end
 
     def total_count
@@ -35,7 +30,7 @@ module SpamClassifier
     end
 
     def self.total_count
-      self['words'].total_count
+      self['any'].total_count
     end
 
     def self.increment_all(category)
@@ -51,6 +46,10 @@ module SpamClassifier
         memo[example.key] = example
         memo
       end
+    end
+
+    def no_examples?
+      (self[:spam] * self[:ham]) == 0
     end
   end
 end

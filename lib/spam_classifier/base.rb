@@ -1,12 +1,55 @@
 # TODO : rework with File.join() for compatibility
 
-require_relative 'public_methods'
-require_relative 'logger'
+%w(logger constants url_detection).each do |file|
+  require_relative(file)
+end
 
 module SpamClassifier
   class Base
-    include PublicMethods
     include Logger
+    include Constants
+
+    def classify
+      unless pass_ham_heuristics?
+        classify_as! :ham
+        return IS_HAM
+      end
+      unless pass_spam_heuristics?
+        classify_as! :spam
+        return IS_SPAM
+      end
+
+      SpamClassificationIndex.fetch_all(words)
+      log_classification
+
+      ratio = spam_ham_ratio
+      case
+      when ratio >= SPAM_THRESHOLD
+        IS_SPAM
+      when ratio >= 1.0
+        DUNNO
+      else
+        IS_HAM
+      end
+    end
+
+    def classify_as!(category)
+      SpamClassificationIndex.fetch_all(words)
+
+      Words.increment_many(words, category)
+      TrainingExamples.increment_all(category)
+
+      # BIG TODO: account for custom defined features
+      # features.each do .. instead of FEATURES.each do ..
+      FEATURES.each do |feature|
+        if send("#{feature}?")
+          Features[feature].increment(category)
+        end
+      end
+
+      SpamClassificationIndex.write!
+      log_training
+    end
 
     private
 
@@ -44,7 +87,7 @@ module SpamClassifier
     end
 
     def url_in_text?
-      text.scan(URL_REGEX).size > 0
+      UrlDetection.new(text).any?
     end
 
     def email_in_text?
@@ -134,7 +177,7 @@ module SpamClassifier
 
     # Pr(features | category) = Pr(feature_1 | category) * .. * Pr(feature_K | category)
     def features_probability_for(category)
-      features.inject(1.0) do |memo, feature|
+      present_features.inject(1.0) do |memo, feature|
         memo * Features[feature].probability_for(category)
       end
     end
