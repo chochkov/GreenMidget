@@ -26,7 +26,7 @@ describe SpamClassifier::TrainingExamples do
     it "should return the feature's own example counts if these exist" do
       TrainingExamples.create!('training_examples_with_feature::new')
       TrainingExamples.find_by_key('training_examples_with_feature::new').update_attributes({ :spam_count => 1, :ham_count => 3 })
-      TrainingExamples.class_variable_set("@@cache", {})
+      # TrainingExamples.class_variable_set("@@cache", {})
       TrainingExamples['new'][:spam].should == 1
       TrainingExamples['new'][:ham].should  == 3
     end

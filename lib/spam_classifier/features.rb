@@ -23,11 +23,11 @@ module SpamClassifier
     # end
 
     def key
-      super.gsub(/^feature::/, '')
+      super.gsub(/^with_feature::/, '')
     end
 
     def self.fetch_all
-      features = all(:conditions => '`key` LIKE "feature::%"')
+      features = all(:conditions => '`key` LIKE "with_feature::%"')
       features.inject({}) do |memo, feature|
         memo[feature.key] = feature
         memo

@@ -30,7 +30,7 @@ describe SpamClassifier::SpamClassificationIndex do
 
     it "the cache should be a hash; its keys should be strings" do
       TrainingExamples.create!('training_examples_with_feature::any')
-      Features.create!('feature::url_in_text')
+      Features.create!('with_feature::url_in_text')
       Words.create!('oneword')
       SpamClassificationIndex.fetch_all([ 'oneword' ])
       cache = SpamClassificationIndex.class_variable_get("@@cache")
