@@ -1,7 +1,9 @@
 module SpamClassifier
   class TrainingExamples < SpamClassificationIndex
+    PREFIX = 'training_examples_with_feature::'
+
     def self.[](feature)
-      record = super("training_examples_with_feature::#{feature}")
+      record = super(PREFIX + feature.to_s)
 
       if record.no_examples? && (feature == 'any')
         raise ZeroDivisionError.new('Training examples must be provided for both spam and ham messages before classification')
@@ -12,7 +14,7 @@ module SpamClassifier
       end
     end
 
-    def self.with_words
+    def self.any
       self['any']
     end
 
@@ -41,7 +43,7 @@ module SpamClassifier
     end
 
     def self.fetch_all
-      examples = all(:conditions => '`key` LIKE "training_examples_with_feature::%"')
+      examples = all(:conditions => "`key` LIKE '#{ PREFIX }%'")
       examples.inject({}) do |memo, example|
         memo[example.key] = example
         memo

@@ -1,12 +1,14 @@
 module SpamClassifier
   class Words < SpamClassificationIndex
+    PREFIX = 'word::'
+
     def self.[](key)
-      super("word::#{key}")
+      super(PREFIX + key)
     end
 
     # Pr(word | category)
     def probability_for(category)
-      self[category] / TrainingExamples.with_words[category]
+      self[category] / TrainingExamples.any[category]
     end
 
     def self.increment_many(words, category)
@@ -15,7 +17,7 @@ module SpamClassifier
     end
 
     def self.fetch_many(words)
-      word_keys   = words.map{ |word| "word::#{word}" }
+      word_keys   = words.map{ |word| PREFIX + word }
       known_keys  = all(:conditions => [ '`key` IN (?)', word_keys ])
 
       cache = known_keys.inject({}) do |memo, word|

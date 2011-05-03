@@ -3,7 +3,7 @@
 # 1. any of those methods might be omitted
 # 2. more methods could be added to this class, best as private
 #
-class Spammable < SpamClassifier::Base
+class SpamCheck < SpamClassifier::Base
 
   attr_accessor :text, :user, :spammable_class
 
@@ -80,14 +80,14 @@ class Spammable < SpamClassifier::Base
         :from_words           => words_probability_for(:spam),
         :from_features        => features_probability_for(:spam),
         :known_words          => known_words(:spam).count,
-        :spam_examples        => TrainingExamples.with_words[:spam],
+        :spam_examples        => TrainingExamples.any[:spam],
       },
       :ham => {
         :category_probability => category_probability(:ham),
         :from_words           => words_probability_for(:ham),
         :from_features        => features_probability_for(:ham),
         :known_words          => known_words(:ham).count,
-        :spam_examples        => TrainingExamples.with_words[:ham],
+        :spam_examples        => TrainingExamples.any[:ham],
       }
     })
     Rails.logger.debug "=== SPAM CLASSIFICATION ==="

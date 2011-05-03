@@ -21,16 +21,16 @@ describe SpamClassifier::SpamClassificationIndex do
     end
 
     it "should fetch the system keys along with the given words" do
-      TrainingExamples.create!('training_examples_with_feature::any')
+      TrainingExamples.create!(TrainingExamples::PREFIX + 'any')
       SpamClassificationIndex.fetch_all([])
       cache = SpamClassificationIndex.class_variable_get("@@cache")
-      cache['training_examples_with_feature::any'].should_not == nil
+      cache[TrainingExamples::PREFIX + 'any'].should_not == nil
       cache.count.should == 1
     end
 
     it "the cache should be a hash; its keys should be strings" do
-      TrainingExamples.create!('training_examples_with_feature::any')
-      Features.create!('with_feature::url_in_text')
+      TrainingExamples.create!(TrainingExamples::PREFIX + 'any')
+      Features.create!(Features::PREFIX + 'url_in_text')
       Words.create!('oneword')
       SpamClassificationIndex.fetch_all([ 'oneword' ])
       cache = SpamClassificationIndex.class_variable_get("@@cache")
