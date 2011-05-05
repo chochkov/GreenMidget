@@ -37,14 +37,10 @@ module SpamClassifier
       SpamClassificationIndex.fetch_all(words)
 
       Words.increment_many(words, category)
-      TrainingExamples.increment_all(category)
+      TrainingExamples.increment_many(features, category)
 
-      # BIG TODO: account for custom defined features
-      # features.each do .. instead of FEATURES.each do ..
-      FEATURES.each do |feature|
-        if send("#{feature}?")
-          Features[feature].increment(category)
-        end
+      present_features.each do |feature|
+        Features[feature].increment(category)
       end
 
       SpamClassificationIndex.write!

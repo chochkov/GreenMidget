@@ -35,10 +35,13 @@ module SpamClassifier
       self['any'].total_count
     end
 
-    def self.increment_all(category)
-      # should there be cache load ???
-      SpamClassifier::FEATURES.each do |feature|
-        self[feature].increment(category)
+    def self.increment_many(features, category)
+      features.each do |feature|
+        begin
+          self[feature].increment(category)
+        rescue ZeroDivisionError
+          superclass.create!(PREFIX + 'any').increment(category)
+        end
       end
     end
 

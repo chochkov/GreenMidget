@@ -8,8 +8,11 @@ require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models',
 require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'words')
 require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'features')
 require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'training_examples')
+require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'spam_check')
 
-# path = Gem.searcher.find('spam_classifier').full_gem_path
-# Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
+if (classifier = Gem.searcher.find('spam_classifier'))
+  path = classifier.full_gem_path
+  Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
+end
 
-ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'soundcloud_development')
+ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'soundcloud_development_temp')

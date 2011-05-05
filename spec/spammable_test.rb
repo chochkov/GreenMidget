@@ -1,9 +1,8 @@
 # This class is only used for testing in the spam_classifier_spec
 #
 class SpammableTest < SpamClassifier::Base
-  
   attr_accessor :text
-  
+
   ALPHABETIC_INDEX = ('a'..'z').to_a
 
   def initialize(text = '')
@@ -53,5 +52,4 @@ class SpammableTest < SpamClassifier::Base
   def cache
     SpamClassifier::SpamClassificationIndex.fetch_all(words)
   end
-
 end

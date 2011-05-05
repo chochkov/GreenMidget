@@ -12,7 +12,7 @@ module SpamClassifier
     end
 
     def key
-      super.gsub(/^#{PREFIX}/, '')
+      super.gsub(/^#{ PREFIX }/, '')
     end
 
     def self.fetch_all
