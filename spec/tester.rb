@@ -1,6 +1,5 @@
 # This class is only used for testing in the spam_classifier_spec
-#
-class SpammableTest < SpamClassifier::Base
+class Tester < SpamClassifier::Base
   attr_accessor :text
 
   ALPHABETIC_INDEX = ('a'..'z').to_a
@@ -17,7 +16,7 @@ class SpammableTest < SpamClassifier::Base
       message << word unless message.include?(word)
     end
     text = message.join(' ')
-    SpammableTest.new(text)
+    Tester.new(text)
   end
 
   def category_probability(category)

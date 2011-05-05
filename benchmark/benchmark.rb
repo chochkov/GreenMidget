@@ -12,7 +12,7 @@ MESSAGE_LENGTH  = 1000
 @fast       = []
 
 REPETITIONS.times do
-  a = SpammableTest.new_with_random_text(MESSAGE_LENGTH)
+  a = Tester.new_with_random_text(MESSAGE_LENGTH)
 
   @train_shit << Benchmark.measure{ a.classify_as! :spam }.real
   @train_cool << Benchmark.measure{ a.classify_as! :ham }.real
