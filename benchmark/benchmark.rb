@@ -1,5 +1,4 @@
-# compare classification performance with caching and without (fast / slow)
-#
+# Compare classification performance with caching and without (fast / slow)
 require File.expand_path(File.dirname(__FILE__) + '/../spec/spammable_test')
 
 include SpamClassifier
@@ -13,7 +12,6 @@ MESSAGE_LENGTH  = 1000
 @fast       = []
 
 REPETITIONS.times do
-
   a = SpammableTest.new_with_random_text(MESSAGE_LENGTH)
 
   @train_shit << Benchmark.measure{ a.classify_as! :spam }.real
@@ -36,7 +34,6 @@ REPETITIONS.times do
   end
 
   @fast << Benchmark.measure{ a.classify }.real
-
 end
 
 puts "Average times from #{REPETITIONS} repetitions and #{MESSAGE_LENGTH} words per message"
