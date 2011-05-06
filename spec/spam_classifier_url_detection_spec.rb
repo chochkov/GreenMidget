@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
 require File.expand_path('../../lib/spam_classifier', __FILE__);

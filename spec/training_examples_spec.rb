@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
 describe SpamClassifier::TrainingExamples do

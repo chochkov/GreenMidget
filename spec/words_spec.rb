@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
 describe SpamClassifier::Words do
@@ -67,5 +68,4 @@ describe SpamClassifier::Words do
       Words.find_by_key(Words::PREFIX + "foo")[:ham].should == 1
     end
   end
-
 end

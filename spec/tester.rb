@@ -1,4 +1,4 @@
-# This class is only used for testing in the spam_classifier_spec
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 class Tester < SpamClassifier::Base
   attr_accessor :text
 

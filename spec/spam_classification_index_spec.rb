@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
 describe SpamClassifier::SpamClassificationIndex do
@@ -62,5 +63,4 @@ describe SpamClassifier::SpamClassificationIndex do
       }.should_not change { SpamClassificationIndex.find_by_key('stuff')[:spam] }
     end
   end
-
 end

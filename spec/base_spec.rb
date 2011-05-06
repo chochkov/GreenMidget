@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 require File.join(File.dirname(__FILE__), 'tester')
 
@@ -199,5 +200,4 @@ describe SpamClassifier::Base do
       pending('')
     end
   end
-
 end

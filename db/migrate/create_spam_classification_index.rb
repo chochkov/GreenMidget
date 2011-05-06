@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 class CreateSpamClassificationIndex < ActiveRecord::Migration
   def self.up
     create_table :spam_classification_index do |t|

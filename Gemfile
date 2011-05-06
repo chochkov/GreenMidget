@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 source "http://rubygems.org"
 # Add dependencies required to use your gem here.
 # Example:

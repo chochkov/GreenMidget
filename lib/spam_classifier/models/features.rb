@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module SpamClassifier
   class Features < SpamClassificationIndex
     PREFIX = 'with_feature::'
