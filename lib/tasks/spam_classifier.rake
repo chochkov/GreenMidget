@@ -15,8 +15,13 @@ namespace :spam_classifier do
     keys = ["url_in_text", "email_in_text"].map { |feature| Features::PREFIX + feature }
     keys += ["any", "url_in_text", "email_in_text"].map { |feature| TrainingExamples::PREFIX + feature }
 
-    puts '=== Creating records ==='
-    keys.each { |key| SpamClassificationIndex.create!(key) }
-    puts '=== Done ==='
+    puts '==  Creating records ==='
+    keys.each { |key|
+      unless SpamClassificationIndex.find_by_key(key)
+        SpamClassificationIndex.create!(key)
+        puts "--  Created #{key}"
+      end
+    }
+    puts '==  Done ==='
   end
 end

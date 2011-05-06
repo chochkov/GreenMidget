@@ -30,12 +30,10 @@ module SpamClassifier
     end
 
     def [](category)
-      category = category.to_sym
       send("#{category}_count").to_f
     end
 
     def increment(category)
-      category = category.to_sym
       send("#{category}_count=", self[category] + 1)
       self
     end

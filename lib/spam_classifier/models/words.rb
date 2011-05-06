@@ -9,7 +9,7 @@ module SpamClassifier
 
     # Pr(word | category)
     def probability_for(category)
-      self[category] / TrainingExamples.any[category]
+      self[category] / TrainingExamples.total_count
     end
 
     def self.increment_many(words, category)
@@ -26,7 +26,7 @@ module SpamClassifier
         memo
       end
 
-      words.inject(cache) do |memo, word|
+      word_keys.inject(cache) do |memo, word|
         memo[word] ||= new(word)
         memo
       end

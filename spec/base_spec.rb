@@ -124,6 +124,15 @@ describe SpamClassifier::Base do
         }.should change { TrainingExamples[feature][:ham] }.by(1)
       end
     end
+    it "should not add new records for known keys" do
+      a = Tester.new 'stuff unknown sofar'
+      lambda {
+        a.classify_as! :spam
+      }.should change { SpamClassificationIndex.count }.by(3)
+      lambda {
+        a.classify_as! :ham
+      }.should_not change { SpamClassificationIndex.count }
+    end
   end
 
   describe "#words" do

@@ -37,11 +37,18 @@ module SpamClassifier
     end
 
     def self.increment_many(features, category)
-      features.each do |feature|
+      (['any'] + features).each do |feature|
         begin
           self[feature].increment(category)
         rescue ZeroDivisionError
-          superclass.create!(PREFIX + 'any').increment(category)
+          if(example = superclass.find_by_key(PREFIX + feature))
+            example.increment(category)
+            example.save!
+          else
+            example = superclass.create!(PREFIX + feature)
+            example.increment(category)
+            example.save!
+          end
         end
       end
     end

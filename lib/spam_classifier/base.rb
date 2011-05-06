@@ -92,7 +92,7 @@ module SpamClassifier
     # ------ Words --------
 
     def words
-      strip_external_links.scan(WORDS_SPLIT_REGEX).to_a.uniq.
+      strip_external_links.scan(WORDS_SPLIT_REGEX).uniq.
         map(&:downcase).
         reject { |w| IGNORED_WORDS.include?(w) }
     end

@@ -6,10 +6,12 @@ module SpamClassifier
 
     def log_classification
       # TODO: implement default Logging system 
+      true
     end
 
     def log_training
       # TODO: the same... (obviously)
+      true
     end
   end
 end

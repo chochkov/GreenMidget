@@ -11,9 +11,9 @@ describe SpamClassifier::SpamClassificationIndex do
   describe "#fetch_all" do
     it "should empty cache before fetching" do
       SpamClassificationIndex.fetch_all([ 'foo', 'bar' ])
-      SpamClassificationIndex.class_variable_get("@@cache")['bar'].should_not == nil
+      SpamClassificationIndex.class_variable_get("@@cache")["#{ Words::PREFIX }bar"].should_not == nil
       SpamClassificationIndex.fetch_all(['foo', 'newbar'])
-      SpamClassificationIndex.class_variable_get("@@cache")['bar'].should == nil
+      SpamClassificationIndex.class_variable_get("@@cache")["#{ Words::PREFIX }bar"].should == nil
     end
 
     it "does a multi get on all words and keys" do
