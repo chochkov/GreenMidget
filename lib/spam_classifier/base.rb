@@ -1,7 +1,6 @@
-# TODO : rework with File.join() for compatibility
-
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 %w(logger constants url_detection).each do |file|
-  require_relative(file)
+  require File.join(File.dirname(__FILE__), file)
 end
 
 module SpamClassifier

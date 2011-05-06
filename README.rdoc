@@ -1,9 +1,0 @@
-gem install spam_classifier
-
-rails blog
-
-bundle install
-
-rake -T
-
-rake spam_classifier:setup

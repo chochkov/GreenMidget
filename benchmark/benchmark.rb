@@ -1,5 +1,5 @@
 # Compare classification performance with caching and without (fast / slow)
-require File.expand_path(File.dirname(__FILE__) + '/../spec/spammable_test')
+require File.join(File.dirname(__FILE__), '..', 'spec', 'tester')
 
 include SpamClassifier
 

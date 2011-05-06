@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module SpamClassifier
   class SpamClassificationIndex < ActiveRecord::Base
     set_table_name :spam_classification_index

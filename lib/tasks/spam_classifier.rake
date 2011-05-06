@@ -1,3 +1,4 @@
+# Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'fileutils'
 require 'rake'
 require File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate', 'create_spam_classification_index')
@@ -16,6 +17,6 @@ namespace :spam_classifier do
 
     puts '=== Creating records ==='
     keys.each { |key| SpamClassificationIndex.create!(key) }
-    puts "=== Done ==="
+    puts '=== Done ==='
   end
 end
