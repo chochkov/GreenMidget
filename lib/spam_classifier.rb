@@ -16,4 +16,5 @@ if (classifier = Gem.searcher.find('spam_classifier'))
   Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
 end
 
-ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'soundcloud_development_temp')
+# This must go !
+ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'classifier_development')

@@ -9,7 +9,7 @@ module SpamClassifier
 
     # Pr(feature | category)
     def probability_for(category)
-      self[category] / TrainingExamples[key].total_count
+      self[category] / TrainingExamples[key][category]
     end
 
     def key

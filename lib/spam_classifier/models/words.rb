@@ -9,7 +9,7 @@ module SpamClassifier
 
     # Pr(word | category)
     def probability_for(category)
-      self[category] / TrainingExamples.total_count
+      self[category] / TrainingExamples.any[category]
     end
 
     def self.increment_many(words, category)
