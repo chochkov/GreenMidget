@@ -24,7 +24,7 @@ class Tester < SpamClassifier::Base
     super(category)
   end
 
-  def spam_ham_ratio
+  def criterion_ratio
     cache
     super
   end

@@ -9,12 +9,12 @@ module SpamClassifier
     EXTERNAL_LINK_REGEX = Regexp.new(/(#{ EMAIL_REGEX })|(#{ URL_REGEX })/)
 
     # these are left out when scanning for words
-    IGNORED_WORDS = %w(www com net biz org me)
+    STOP_WORDS = %w(www com net biz org me)
 
-    # MIN_CHARACTERS_IN_WORD = 3
-    # MAX_CHARACTERS_IN_WORD = 20
+    MIN_CHARACTERS_IN_WORD = 3
+    MAX_CHARACTERS_IN_WORD = 20
 
-    WORDS_SPLIT_REGEX = /\w{3,20}/  # Regexp.new(/\w{#{ MIN_CHARACTERS_IN_WORD },#{ MAX_CHARACTERS_IN_WORD }}/)
+    WORDS_SPLIT_REGEX = Regexp.new(/\w{#{ MIN_CHARACTERS_IN_WORD },#{ MAX_CHARACTERS_IN_WORD }}/)
 
     # all features used in the Baysian Filter in paralel with the words-occurrence probabilities
     FEATURES = %w(url_in_text email_in_text)

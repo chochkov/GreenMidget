@@ -21,7 +21,7 @@ module SpamClassifier
       SpamClassificationIndex.fetch_all(words)
       log_classification
 
-      ratio = spam_ham_ratio
+      ratio = criterion_ratio
       case
       when ratio >= SPAM_THRESHOLD
         IS_SPAM
@@ -33,6 +33,7 @@ module SpamClassifier
     end
 
     def classify_as!(category)
+      category = category.to_sym
       SpamClassificationIndex.fetch_all(words)
 
       Words.increment_many(words, category)
@@ -94,7 +95,7 @@ module SpamClassifier
     def words
       strip_external_links.scan(WORDS_SPLIT_REGEX).uniq.
         map(&:downcase).
-        reject { |w| IGNORED_WORDS.include?(w) }
+        reject { |w| STOP_WORDS.include?(w) }
     end
 
     def known_words(category)
@@ -117,12 +118,12 @@ module SpamClassifier
 
     # ------ Probabilities Calculation --------
 
-    # We use the ratio between Spam Probability and Ham Probability as decision criterion.
+    # We use the ratio between Spam Probability and Ham Probability as decision criterion_ratio.
     # We do individual word-occurrence analysis as well as SpamClassifier::FEATURES list of features
     # with words and features being naively considered independent:
     # - text analysis i.e. Pr(category | text) = Pr(category | word_1) * .. * Pr(category | word_N)
     # - features - eg. url found in text => Pr(category | url_in_text)
-    def spam_ham_ratio
+    def criterion_ratio
       # Pr(category = spam | text) / Pr(category = ham | text)
       spam_prob, ham_prob = category_probability(:spam), category_probability(:ham)
       return case
@@ -137,11 +138,11 @@ module SpamClassifier
         end
     end
 
-    # Pr(category | text, user)
+    # Pr(category | text)
     def category_probability(category)
       # Bayesean Theorem:
-      # Pr(category | text, user) = Pr(word_1 | category) * ... * Pr(word_N | category) *
-      # * Pr(feature_1 | category) * ... * Pr(feature_K | category) * Pr(category) / Pr(text, user)
+      # Pr(category | text) = Pr(word_1 | category) * ... * Pr(word_N | category) *
+      # * Pr(feature_1 | category) * ... * Pr(feature_K | category) * Pr(category) / Pr(text)
 
       from_words    = words_probability_for(category)
       from_features = features_probability_for(category)
@@ -179,7 +180,7 @@ module SpamClassifier
 
     # Pr(text)
     def text_and_user_probability
-      # We don't need to calculate this, because Pr(text) would cancel out in the spam_ham_ratio.
+      # We don't need to calculate this, because Pr(text) would cancel out in the criterion_ratio.
       # This method should implement the probability calculation if necessary.
       return 1.0
     end

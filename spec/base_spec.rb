@@ -48,13 +48,13 @@ describe SpamClassifier::Base do
       should == (71.0/1000 * 90.0/1000 * 811.0/1000 * 1000.0/(1000+1000)).round(5)
   end
 
-  describe 'SpamClassifierProbabilities#spam_ham_ratio' do
+  describe 'SpamClassifierProbabilities#criterion_ratio' do
     it "should be smaller for a smaller number of spammy words" do
-      Tester.new('this dirty test').spam_ham_ratio.should > Tester.new('this test').spam_ham_ratio
+      Tester.new('this dirty test').criterion_ratio.should > Tester.new('this test').criterion_ratio
     end
   end
 
-  describe "#spam_ham_ratio" do
+  describe "#criterion_ratio" do
     it "should add unknown words to the dictionary before classification" do
       Tester.new('newword needs to pass heuristics').classify
       Words['newword'][:spam].should == 0
@@ -62,52 +62,52 @@ describe SpamClassifier::Base do
     end
 
     it "considers 'test goes words' ham" do
-      Tester.new('test goes words').spam_ham_ratio.should < 1
+      Tester.new('test goes words').criterion_ratio.should < 1
     end
 
     it "considers 'rid goes dirty' spam" do
-      Tester.new('rid goes dirty').spam_ham_ratio.should >= SPAM_THRESHOLD
+      Tester.new('rid goes dirty').criterion_ratio.should >= SPAM_THRESHOLD
     end
 
     it "doesn't know whether 'zero goes rid' is spam or not" do
-      Tester.new('zero goes rid').spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      Tester.new('zero goes rid').criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
     end
 
     it "thinks of 'test boss@offshore.com' as more spam than just 'test'" do
-      Tester.new('test boss@offshore.com').spam_ham_ratio.
-        should > Tester.new('test').spam_ham_ratio
+      Tester.new('test boss@offshore.com').criterion_ratio.
+        should > Tester.new('test').criterion_ratio
     end
 
     it "thinks of 'test www.offshore.com' as more spam than just 'test'" do
-      Tester.new('test www.offshore.com').spam_ham_ratio.
-        should > Tester.new('test').spam_ham_ratio
+      Tester.new('test www.offshore.com').criterion_ratio.
+        should > Tester.new('test').criterion_ratio
     end
 
     it "will tolerate urls coming from known sites" do
-      Tester.new('test www.offshore.com').spam_ham_ratio.should >
-      Tester.new('test www.soundcloud.com').spam_ham_ratio
+      Tester.new('test www.offshore.com').criterion_ratio.should >
+      Tester.new('test www.soundcloud.com').criterion_ratio
     end
 
     it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
-      Tester.new('zero newword heuristicspass').spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      Tester.new('zero newword heuristicspass').criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
     end
 
     it "should say IS_SPAM if it has spam score for a message and doesn't have ham score for it" do
       a = Tester.new('nosuchword nowordsuch heuristicspass')
       a.category_probability(:spam).should == 0.0
       a.category_probability(:ham).should == 0.0
-      a.spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      a.criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
       a.classify_as!(:spam)
-      a.spam_ham_ratio.should >= SPAM_THRESHOLD
+      a.criterion_ratio.should >= SPAM_THRESHOLD
     end
 
     it "should say IS_HAM if it has ham score for a message and doesn't have spam score for it" do
       a = Tester.new('suchwordno nowordsuch heuristicspasss')
       a.category_probability(:spam).should == 0.0
       a.category_probability(:ham).should == 0.0
-      a.spam_ham_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      a.criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
       a.classify_as!(:ham)
-      a.spam_ham_ratio.should < 1
+      a.criterion_ratio.should < 1
     end
   end
 
