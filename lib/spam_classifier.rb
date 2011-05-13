@@ -5,10 +5,11 @@ require 'active_record'
 require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'spam_classifier')
 
 require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'base')
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'spam_classification_index')
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'words')
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'features')
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'models', 'training_examples')
+
+Dir["#{File.dirname(__FILE__)}/spam_classifier/models/*.rb"].each do |model|
+  require model
+end
+
 require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'spam_check')
 
 if (classifier = Gem.searcher.find('spam_classifier'))
@@ -17,4 +18,4 @@ if (classifier = Gem.searcher.find('spam_classifier'))
 end
 
 # This must go !
-ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'classifier_development')
+ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'classifier_development_weird')

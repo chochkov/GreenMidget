@@ -1,6 +1,6 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module SpamClassifier
-  class TrainingExamples < SpamClassificationIndex
+  class TrainingExamples < CountableObject
     PREFIX = 'training_examples_with_feature::'
 
     def self.[](feature)

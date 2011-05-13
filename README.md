@@ -1,4 +1,4 @@
-On Bayesian Text Classification
+On Bayesian Classification
 ----------
 
 Using SoundCloud's private messaging means that you can effectively reach out to everyone on the Cloud. On top of that, you have track commenting, groups posting, forum topics, track sharing - we care about your voice being heard! And read.

@@ -25,5 +25,7 @@ module SpamClassifier
     IS_SPAM = 1
     DUNNO   = 0
     IS_HAM  = -1
+
+    CATEGORIES = [ :spam, :ham ]
   end
 end

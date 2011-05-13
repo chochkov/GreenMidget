@@ -1,7 +1,7 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module SpamClassifier
-  class Features < SpamClassificationIndex
-    PREFIX = 'with_feature::'
+  class Features < CountableObject
+    PREFIX = 'feature::'
 
     def self.[](feature)
       super(PREFIX + feature.to_s)
@@ -17,7 +17,7 @@ module SpamClassifier
     end
 
     def self.fetch_all
-      features = all(:conditions => "`key` LIKE '#{ PREFIX }%'")
+      features = all(:conditions => "")
       features.inject({}) do |memo, feature|
         memo[feature.key] = feature
         memo

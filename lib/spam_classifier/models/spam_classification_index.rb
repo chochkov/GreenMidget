@@ -4,38 +4,43 @@ module SpamClassifier
     set_table_name :spam_classification_index
 
     def self.fetch_all(words = [])
-      words     = Words.fetch_many(words)
-      features  = Features.fetch_all
-      examples  = TrainingExamples.fetch_all
+      word_keys = words.map{ |word| [ Words::PREFIX + word + '::spam_count', Words::PREFIX + word + '::ham_count'] }.flatten
+      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features::Prefix }%' OR `key` LIKE '#{ TrainingExamples::Prefix }%'", word_keys ])
 
-      @@cache = [ words, features, examples ].inject({}) do |memo, hash|
-        memo.merge!(hash)
+      @@cache = records.inject({}) do |memo, record|
+        memo[record.key] = record
+        memo
+      end
+
+      word_keys.inject(@@cache) do |memo, word|
+        memo[word] ||= new(word)
+        memo
       end
     end
 
     def self.write!
       @@cache ||= {}
       @@cache.map(&:last).map(&:save)
+      written_cache = @@cache
       @@cache = {}
+      written_cache
     end
 
     def self.[](key)
       key = key.to_s
       @@cache ||= {}
-      @@cache[key] || @@cache[key] = find_by_key(key) || @@cache[key] = new(key)
+      (@@cache[key] || @@cache[key] = find_by_key(key) || @@cache[key] = new(key))
     end
 
-    def self.new(word, spam_count = nil, ham_count = nil)
-      super(:key => word, :spam_count => spam_count || 0, :ham_count => ham_count || 0)
+    def self.new(key, value = nil)
+      super(:key => key, :value => value || 0.0)
     end
 
-    def [](category)
-      send("#{category}_count").to_f
-    end
-
-    def increment(category)
-      category = category.to_sym
-      send("#{category}_count=", self[category] + 1)
+    def increment
+      unless key =~ /_count$/
+        raise ArgumentError.new("#increment method called on a non countable object!")
+      end
+      self.value = value.to_f + 1
       self
     end
 

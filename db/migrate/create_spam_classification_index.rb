@@ -3,8 +3,7 @@ class CreateSpamClassificationIndex < ActiveRecord::Migration
   def self.up
     create_table :spam_classification_index do |t|
       t.string   :key
-      t.integer  :spam_count
-      t.integer  :ham_count
+      t.string   :value
       t.datetime :updated_at
     end
     add_index :spam_classification_index, :key
