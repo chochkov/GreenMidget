@@ -4,8 +4,8 @@ module SpamClassifier
     set_table_name :spam_classification_index
 
     def self.fetch_all(words = [])
-      word_keys = words.map{ |word| [ Words::PREFIX + word + '::spam_count', Words::PREFIX + word + '::ham_count'] }.flatten
-      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features::Prefix }%' OR `key` LIKE '#{ TrainingExamples::Prefix }%'", word_keys ])
+      word_keys = words.map{ |word| [ Words::PREFIX + word + '::spam_count', Words::PREFIX + word + '::ham_count' ] }.flatten
+      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features::PREFIX }%' OR `key` LIKE '#{ Examples::PREFIX }%'", word_keys ])
 
       @@cache = records.inject({}) do |memo, record|
         memo[record.key] = record
@@ -29,17 +29,19 @@ module SpamClassifier
     def self.[](key)
       key = key.to_s
       @@cache ||= {}
-      (@@cache[key] || @@cache[key] = find_by_key(key) || @@cache[key] = new(key))
+      @@cache[key] || @@cache[key] = find_by_key(key) || @@cache[key] = new(key)
     end
 
     def self.new(key, value = nil)
       super(:key => key, :value => value || 0.0)
     end
 
+    def self.increment(keys)
+      keys.each { |key| self[key].increment }
+    end
+
     def increment
-      unless key =~ /_count$/
-        raise ArgumentError.new("#increment method called on a non countable object!")
-      end
+      raise ArgumentError.new("#increment called on a non countable object!") unless key =~ /_count$/
       self.value = value.to_f + 1
       self
     end

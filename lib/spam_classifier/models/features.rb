@@ -1,27 +1,17 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module SpamClassifier
-  class Features < CountableObject
+  class Features < Countable
     PREFIX = 'feature::'
 
-    def self.[](feature)
-      super(PREFIX + feature.to_s)
-    end
+    def self.prefix; PREFIX end
 
     # Pr(feature | category)
     def probability_for(category)
-      self[category] / TrainingExamples[key][category]
+      self[category] / Examples[feature][category]
     end
 
-    def key
-      super.gsub(/^#{ PREFIX }/, '')
-    end
-
-    def self.fetch_all
-      features = all(:conditions => "")
-      features.inject({}) do |memo, feature|
-        memo[feature.key] = feature
-        memo
-      end
+    def feature
+      key.gsub(/(^#{ PREFIX })|(::\w+_count$)/, '')
     end
   end
 end

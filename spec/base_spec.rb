@@ -8,19 +8,19 @@ describe SpamClassifier::Base do
   before(:each) do
     SpamClassificationIndex.delete_all
     [
-      {:key => "word::this",                                      :spam_count => 701,  :ham_count =>   11},
-      {:key => "word::test",                                      :spam_count => 9,    :ham_count =>   71},
-      {:key => "word::goes",                                      :spam_count => 90,   :ham_count =>   90},
-      {:key => "word::rid",                                       :spam_count => 311,  :ham_count =>  290},
-      {:key => "word::dirty",                                     :spam_count => 222,  :ham_count =>   45},
-      {:key => "word::spam",                                      :spam_count => 11,   :ham_count =>  133},
-      {:key => "word::words",                                     :spam_count => 6,    :ham_count =>  811},
-      {:key => "word::zero",                                      :spam_count => 0,    :ham_count =>    0},
-      {:key => "with_feature::url_in_text",                       :spam_count => 440,  :ham_count =>   40},
-      {:key => "with_feature::email_in_text",                     :spam_count => 112,  :ham_count =>    9},
-      {:key => "training_examples_with_feature::any",             :spam_count => 1000, :ham_count => 1000},
-      {:key => "training_examples_with_feature::url_in_text",     :spam_count => 1000, :ham_count => 1000},
-      {:key => "training_examples_with_feature::email_in_text",   :spam_count => 1000, :ham_count => 1000},
+      {:key => "#{ Words::PREFIX }this",             :spam_count => 701,  :ham_count =>   11},
+      {:key => "#{ Words::PREFIX }test",             :spam_count => 9,    :ham_count =>   71},
+      {:key => "#{ Words::PREFIX }goes",             :spam_count => 90,   :ham_count =>   90},
+      {:key => "#{ Words::PREFIX }rid",              :spam_count => 311,  :ham_count =>  290},
+      {:key => "#{ Words::PREFIX }dirty",            :spam_count => 222,  :ham_count =>   45},
+      {:key => "#{ Words::PREFIX }spam",             :spam_count => 11,   :ham_count =>  133},
+      {:key => "#{ Words::PREFIX }words",            :spam_count => 6,    :ham_count =>  811},
+      {:key => "#{ Words::PREFIX }zero",             :spam_count => 0,    :ham_count =>    0},
+      {:key => "#{ Features::PREFIX }url_in_text",   :spam_count => 440,  :ham_count =>   40},
+      {:key => "#{ Features::PREFIX }email_in_text", :spam_count => 112,  :ham_count =>    9},
+      {:key => "#{ Examples::PREFIX }any",           :spam_count => 1000, :ham_count => 1000},
+      {:key => "#{ Examples::PREFIX }url_in_text",   :spam_count => 1000, :ham_count => 1000},
+      {:key => "#{ Examples::PREFIX }email_in_text", :spam_count => 1000, :ham_count => 1000},
     ].each do |entry|
       key = entry[:key]
       instance = case
@@ -29,7 +29,7 @@ describe SpamClassifier::Base do
         when key =~ /^with_feature::/ then
           Features.create!(key)
         when key =~ /^training_examples_with_feature::/ then
-          TrainingExamples.create!(key)
+          Examples.create!(key)
         else
           raise ArgumentError.new('Bad entry')
       end
@@ -121,7 +121,7 @@ describe SpamClassifier::Base do
       FEATURES.each do |feature|
         lambda {
           Tester.new('zero').classify_as!(:ham)
-        }.should change { TrainingExamples[feature][:ham] }.by(1)
+        }.should change { Examples[feature][:ham] }.by(1)
       end
     end
     it "should not add new records for known keys" do

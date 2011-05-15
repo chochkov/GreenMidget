@@ -9,13 +9,12 @@ module SpamClassifier
     include Constants
 
     def classify
-      unless pass_ham_heuristics?
-        classify_as! :ham
-        return IS_HAM
-      end
-      unless pass_spam_heuristics?
-        classify_as! :spam
-        return IS_SPAM
+      # check heuristics in the order
+      CATEGORIES.each do |category|
+        if respond_to?(:"pass_#{category}_heuristics?") && send(:"pass_#{category}_heuristics?")
+          classify_as!(category)
+          return "IS_#{category}".constantize
+        end
       end
 
       SpamClassificationIndex.fetch_all(words)
@@ -36,28 +35,16 @@ module SpamClassifier
       category = category.to_sym
       SpamClassificationIndex.fetch_all(words)
 
-      Words.increment_many(words, category)
-      TrainingExamples.increment_many(features, category)
-
-      present_features.each do |feature|
-        Features[feature].increment(category)
+      keys = [ Words.many(words), Features.many(present_features), Examples.many_with_general(features) ].flatten.map do |object|
+        object.record_key(category)
       end
 
+      SpamClassificationIndex.increment(keys)
       SpamClassificationIndex.write!
       log_training
     end
 
     private
-
-    # ------ Default Heuristics --------
-
-    def pass_ham_heuristics?
-      true
-    end
-
-    def pass_spam_heuristics?
-      true
-    end
 
     # ------ Features --------
 
@@ -78,7 +65,7 @@ module SpamClassifier
       if respond_to?(method, true)
         send(method)
       else
-        raise NoMethodError.new("You must implement method #{method} or remove this feature: #{feature}.")
+        raise NoMethodError.new("You must implement method #{method} or remove feature #{feature}.")
       end
     end
 
@@ -150,7 +137,7 @@ module SpamClassifier
       if from_words.eql?(1.0) && from_features.eql?(1.0)
         0.0
       else
-        from_words * from_features * TrainingExamples.probability_for(category) / text_and_user_probability
+        from_words * from_features * Examples.probability_for(category) / text_and_user_probability
       end
     end
 
@@ -165,7 +152,7 @@ module SpamClassifier
       end
 
       if new_words(category).count > 0
-        probability *= (1.0 / TrainingExamples.total_count) ** new_words(category).count
+        probability *= (1.0 / Examples.total_count) ** new_words(category).count
       else
         probability
       end

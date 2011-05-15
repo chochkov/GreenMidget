@@ -12,8 +12,13 @@ namespace :spam_classifier do
       CreateSpamClassificationIndex.up
     end
 
-    keys = ["url_in_text", "email_in_text"].map { |feature| [ Features::PREFIX + feature + '::spam_count', Features::PREFIX + feature + '::ham_count'] }.flatten
-    keys += ["any", "url_in_text", "email_in_text"].map { |feature| [ TrainingExamples::PREFIX + feature + '::spam_count', TrainingExamples::PREFIX + feature + '::ham_count'] }.flatten
+    keys = ["url_in_text", "email_in_text"].map do |feature|
+      [ Features.prefix + feature + '::spam_count', Features.prefix + feature + '::ham_count']
+    end.flatten
+
+    keys += [Examples::GENERAL_FEATURE_NAME, "url_in_text", "email_in_text"].map do |feature|
+      [ Examples.prefix + feature + '::spam_count', Examples.prefix + feature + '::ham_count']
+    end.flatten
 
     puts '==  Creating records ==='
     keys.each { |key|
@@ -23,10 +28,5 @@ namespace :spam_classifier do
       end
     }
     puts '==  Done ==='
-  end
-
-  desc "run benchmark tests for this project"
-  task :monitor => :environment do
-
   end
 end
