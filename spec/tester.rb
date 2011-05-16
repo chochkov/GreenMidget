@@ -29,11 +29,6 @@ class Tester < SpamClassifier::Base
     super
   end
 
-  def pass_ham_heuristics?
-    cache
-    super
-  end
-
   def words
     super
   end

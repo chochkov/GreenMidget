@@ -8,33 +8,34 @@ describe SpamClassifier::Base do
   before(:each) do
     SpamClassificationIndex.delete_all
     [
-      {:key => "#{ Words::PREFIX }this",             :spam_count => 701,  :ham_count =>   11},
-      {:key => "#{ Words::PREFIX }test",             :spam_count => 9,    :ham_count =>   71},
-      {:key => "#{ Words::PREFIX }goes",             :spam_count => 90,   :ham_count =>   90},
-      {:key => "#{ Words::PREFIX }rid",              :spam_count => 311,  :ham_count =>  290},
-      {:key => "#{ Words::PREFIX }dirty",            :spam_count => 222,  :ham_count =>   45},
-      {:key => "#{ Words::PREFIX }spam",             :spam_count => 11,   :ham_count =>  133},
-      {:key => "#{ Words::PREFIX }words",            :spam_count => 6,    :ham_count =>  811},
-      {:key => "#{ Words::PREFIX }zero",             :spam_count => 0,    :ham_count =>    0},
-      {:key => "#{ Features::PREFIX }url_in_text",   :spam_count => 440,  :ham_count =>   40},
-      {:key => "#{ Features::PREFIX }email_in_text", :spam_count => 112,  :ham_count =>    9},
-      {:key => "#{ Examples::PREFIX }any",           :spam_count => 1000, :ham_count => 1000},
-      {:key => "#{ Examples::PREFIX }url_in_text",   :spam_count => 1000, :ham_count => 1000},
-      {:key => "#{ Examples::PREFIX }email_in_text", :spam_count => 1000, :ham_count => 1000},
+      {:key => "#{ Words::PREFIX    }this::spam_count",             :value => 701  },
+      {:key => "#{ Words::PREFIX    }this::ham_count",              :value => 11   },
+      {:key => "#{ Words::PREFIX    }test::spam_count",             :value => 9    },
+      {:key => "#{ Words::PREFIX    }test::ham_count",              :value => 71   },
+      {:key => "#{ Words::PREFIX    }goes::spam_count",             :value => 90   },
+      {:key => "#{ Words::PREFIX    }goes::ham_count",              :value => 90   },
+      {:key => "#{ Words::PREFIX    }rid::spam_count",              :value => 311  },
+      {:key => "#{ Words::PREFIX    }rid::ham_count",               :value => 290  },
+      {:key => "#{ Words::PREFIX    }dirty::spam_count",            :value => 222  },
+      {:key => "#{ Words::PREFIX    }dirty::ham_count",             :value => 45   },
+      {:key => "#{ Words::PREFIX    }spam::spam_count",             :value => 11   },
+      {:key => "#{ Words::PREFIX    }spam::ham_count",              :value => 133  },
+      {:key => "#{ Words::PREFIX    }words::spam_count",            :value => 6    },
+      {:key => "#{ Words::PREFIX    }words::ham_count",             :value => 811  },
+      {:key => "#{ Words::PREFIX    }zero::spam_count",             :value => 0    },
+      {:key => "#{ Words::PREFIX    }zero::ham_count",              :value => 0    },
+      {:key => "#{ Features::PREFIX }url_in_text::spam_count",      :value => 440  },
+      {:key => "#{ Features::PREFIX }url_in_text::ham_count",       :value => 40   },
+      {:key => "#{ Features::PREFIX }email_in_text::spam_count",    :value => 112  },
+      {:key => "#{ Features::PREFIX }email_in_text::ham_count",     :value => 9    },
+      {:key => "#{ Examples::PREFIX }any::spam_count",              :value => 1000 },
+      {:key => "#{ Examples::PREFIX }any::ham_count",               :value => 1000 },
+      {:key => "#{ Examples::PREFIX }url_in_text::spam_count",      :value => 1000 },
+      {:key => "#{ Examples::PREFIX }url_in_text::ham_count",       :value => 1000 },
+      {:key => "#{ Examples::PREFIX }email_in_text::spam_count",    :value => 1000 },
+      {:key => "#{ Examples::PREFIX }email_in_text::ham_count",     :value => 1000 },
     ].each do |entry|
-      key = entry[:key]
-      instance = case
-        when key =~ /^word::/ then
-          Words.create!(key)
-        when key =~ /^with_feature::/ then
-          Features.create!(key)
-        when key =~ /^training_examples_with_feature::/ then
-          Examples.create!(key)
-        else
-          raise ArgumentError.new('Bad entry')
-      end
-      instance.update_attributes({ :spam_count => entry[:spam_count], :ham_count => entry[:ham_count] })
-      SpamClassificationIndex.write!
+      SpamClassificationIndex.create!(entry[:key]).update_attribute(:value, entry[:value])
     end
   end
 
@@ -128,7 +129,7 @@ describe SpamClassifier::Base do
       a = Tester.new 'stuff unknown sofar'
       lambda {
         a.classify_as! :spam
-      }.should change { SpamClassificationIndex.count }.by(3)
+      }.should change { SpamClassificationIndex.count }.by(6)
       lambda {
         a.classify_as! :ham
       }.should_not change { SpamClassificationIndex.count }
