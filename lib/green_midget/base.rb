@@ -18,16 +18,16 @@ module GreenMidget
       end
 
       GreenMidgetRecords.fetch_all(words)
-      log_classification
+      register_classification
 
-      ratio = criterion_ratio
+      ratio = bayesian_factor
       case
-      when ratio >= SPAM_THRESHOLD
-        IS_SPAM
-      when ratio >= 1.0
+      when ratio >= REJECT_THRESHOLD
+        ALTERNATIVE
+      when ratio >= ACCEPTANCE_THRESHOLD
         DUNNO
       else
-        IS_HAM
+        NULL
       end
     end
 
@@ -41,7 +41,7 @@ module GreenMidget
 
       GreenMidgetRecords.increment(keys)
       GreenMidgetRecords.write!
-      log_training
+      register_training
     end
 
     private
@@ -105,71 +105,44 @@ module GreenMidget
 
     # ------ Probabilities Calculation --------
 
-    # We use the ratio between Spam Probability and Ham Probability as decision criterion_ratio.
-    # We do individual word-occurrence analysis as well as GreenMidget::FEATURES list of features
-    # with words and features being naively considered independent:
-    # - text analysis i.e. Pr(category | text) = Pr(category | word_1) * .. * Pr(category | word_N)
-    # - features - eg. url found in text => Pr(category | url_in_text)
-    def criterion_ratio
-      # Pr(category = spam | text) / Pr(category = ham | text)
-      spam_prob, ham_prob = category_probability(:spam), category_probability(:ham)
-      return case
-        when (ham_prob.eql?(0.0) && spam_prob > 0)
-          SPAM_THRESHOLD / 1.0
-        when (spam_prob.eql?(0.0) && ham_prob > 0)
-          1.0/2.0
-        when (spam_prob.eql?(0.0) && ham_prob.eql?(0.0))
-          1.0
-        else
-          spam_prob / ham_prob
-        end
+    # log [Pr(category = alternative | text) / Pr(category = null | text)]
+    def bayesian_factor
+      log_probability_null, log_probability_alternative = CATEGORIES.map { |category| log_probability(category) }
+      case
+      when log_probability_null.eql?(0.0) && log_probability_alternative < 0.0
+        REJECT_THRESHOLD
+      when log_probability_alternative.eql?(0.0) && log_probability_null < 0.0
+        - 1.0
+      when log_probability_alternative.eql?(0.0) && log_probability_null.eql?(0.0)
+        1.0
+      else
+        log_probability_alternative - log_probability_null
+      end
     end
 
-    # Pr(category | text)
-    def category_probability(category)
-      # Bayesean Theorem:
-      # Pr(category | text) = Pr(word_1 | category) * ... * Pr(word_N | category) *
-      # * Pr(feature_1 | category) * ... * Pr(feature_K | category) * Pr(category) / Pr(text)
-
-      from_words    = words_probability_for(category)
-      from_features = features_probability_for(category)
-
-      if from_words.eql?(1.0) && from_features.eql?(1.0)
+    def log_probability(category)
+      from_words = log_probability_words(category)
+      if from_words.eql?(0.0)
         0.0
       else
-        from_words * from_features * Examples.probability_for(category) / text_and_user_probability
+        from_words + log_probability_features(category) + Math::log(Examples.probability_for(category))
       end
     end
 
-    # Pr(words | category) = Pr(word_1 | category) * ... * Pr(word_N | category)
-    def words_probability_for(category)
-      if known_words(category).count == 0
+    def log_probability_words(category)
+      if known_words(category).count.zero?
         return 0.0
       end
-
-      probability = known_words(category).inject(1.0) do |memo, word|
-        memo * Words[word].probability_for(category)
+      probability = known_words(category).inject(0.0) do |memo, word|
+        memo + Math::log(Words[word].probability_for(category))
       end
-
-      if new_words(category).count > 0
-        probability *= (1.0 / Examples.total_count) ** new_words(category).count
-      else
-        probability
-      end
+      probability += Math::log(1.0 / Examples.total_count) * new_words(category).count
     end
 
-    # Pr(features | category) = Pr(feature_1 | category) * .. * Pr(feature_K | category)
-    def features_probability_for(category)
-      present_features.inject(1.0) do |memo, feature|
-        memo * Features[feature].probability_for(category)
+    def log_probability_features(category)
+      present_features.inject(0.0) do |memo, feature|
+        memo + Math::log(Features[feature].probability_for(category))
       end
-    end
-
-    # Pr(text)
-    def text_and_user_probability
-      # We don't need to calculate this, because Pr(text) would cancel out in the criterion_ratio.
-      # This method should implement the probability calculation if necessary.
-      return 1.0
     end
   end
 end

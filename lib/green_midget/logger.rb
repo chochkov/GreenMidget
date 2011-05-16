@@ -4,12 +4,12 @@ module GreenMidget
 
     private
 
-    def log_classification
+    def register_classification
       # TODO: implement default Logging system 
       true
     end
 
-    def log_training
+    def register_training
       # TODO: the same... (obviously)
       true
     end

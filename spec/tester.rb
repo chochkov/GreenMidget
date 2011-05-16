@@ -19,12 +19,12 @@ class Tester < GreenMidget::Base
     Tester.new(text)
   end
 
-  def category_probability(category)
+  def log_probability(category)
     cache
     super(category)
   end
 
-  def criterion_ratio
+  def bayesian_factor
     cache
     super
   end

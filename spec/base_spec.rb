@@ -40,22 +40,22 @@ describe GreenMidget::Base do
   end
 
   it "should calculate spam probability of 2.43e-06 for 'test goes words'" do
-    Tester.new('test goes words').category_probability(:spam).
-      should == 9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)
+    Tester.new('test goes words').log_probability(:spam).round(5).
+      should == Math::log(9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)).round(5)
   end
 
   it "should calculate ham probability of 0.00259 for 'test goes words'" do
-    Tester.new('test goes words').category_probability(:ham).round(5).
-      should == (71.0/1000 * 90.0/1000 * 811.0/1000 * 1000.0/(1000+1000)).round(5)
+    Tester.new('test goes words').log_probability(:ham).round(5).
+      should == Math::log(71.0/1000 * 90.0/1000 * 811.0/1000 * 1000.0/(1000+1000)).round(5)
   end
 
-  describe 'GreenMidgetProbabilities#criterion_ratio' do
+  describe 'GreenMidgetProbabilities#bayesian_factor' do
     it "should be smaller for a smaller number of spammy words" do
-      Tester.new('this dirty test').criterion_ratio.should > Tester.new('this test').criterion_ratio
+      Tester.new('this dirty test').bayesian_factor.should > Tester.new('this test').bayesian_factor
     end
   end
 
-  describe "#criterion_ratio" do
+  describe "#bayesian_factor" do
     it "should add unknown words to the dictionary before classification" do
       Tester.new('newword needs to pass heuristics').classify
       Words['newword'][:spam].should == 0
@@ -63,52 +63,52 @@ describe GreenMidget::Base do
     end
 
     it "considers 'test goes words' ham" do
-      Tester.new('test goes words').criterion_ratio.should < 1
+      Tester.new('test goes words').bayesian_factor.should < ACCEPTANCE_THRESHOLD
     end
 
     it "considers 'rid goes dirty' spam" do
-      Tester.new('rid goes dirty').criterion_ratio.should >= SPAM_THRESHOLD
+      Tester.new('rid goes dirty').bayesian_factor.should >= REJECT_THRESHOLD
     end
 
     it "doesn't know whether 'zero goes rid' is spam or not" do
-      Tester.new('zero goes rid').criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      Tester.new('zero goes rid').bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
     end
 
     it "thinks of 'test boss@offshore.com' as more spam than just 'test'" do
-      Tester.new('test boss@offshore.com').criterion_ratio.
-        should > Tester.new('test').criterion_ratio
+      Tester.new('test boss@offshore.com').bayesian_factor.
+        should > Tester.new('test').bayesian_factor
     end
 
     it "thinks of 'test www.offshore.com' as more spam than just 'test'" do
-      Tester.new('test www.offshore.com').criterion_ratio.
-        should > Tester.new('test').criterion_ratio
+      Tester.new('test www.offshore.com').bayesian_factor.
+        should > Tester.new('test').bayesian_factor
     end
 
     it "will tolerate urls coming from known sites" do
-      Tester.new('test www.offshore.com').criterion_ratio.should >
-      Tester.new('test www.soundcloud.com').criterion_ratio
+      Tester.new('test www.offshore.com').bayesian_factor.should >
+      Tester.new('test www.soundcloud.com').bayesian_factor
     end
 
     it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
-      Tester.new('zero newword heuristicspass').criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      Tester.new('zero newword heuristicspass').bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
     end
 
-    it "should say IS_SPAM if it has spam score for a message and doesn't have ham score for it" do
+    it "should say ALTERNATIVE if it has spam score for a message and doesn't have ham score for it" do
       a = Tester.new('nosuchword nowordsuch heuristicspass')
-      a.category_probability(:spam).should == 0.0
-      a.category_probability(:ham).should == 0.0
-      a.criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      a.log_probability(:spam).should == 0.0
+      a.log_probability(:ham).should == 0.0
+      a.bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
       a.classify_as!(:spam)
-      a.criterion_ratio.should >= SPAM_THRESHOLD
+      a.bayesian_factor.should >= REJECT_THRESHOLD
     end
 
-    it "should say IS_HAM if it has ham score for a message and doesn't have spam score for it" do
+    it "should say NULL if it has ham score for a message and doesn't have spam score for it" do
       a = Tester.new('suchwordno nowordsuch heuristicspasss')
-      a.category_probability(:spam).should == 0.0
-      a.category_probability(:ham).should == 0.0
-      a.criterion_ratio.between?(1, SPAM_THRESHOLD).should be_true
+      a.log_probability(:spam).should == 0.0
+      a.log_probability(:ham).should == 0.0
+      a.bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
       a.classify_as!(:ham)
-      a.criterion_ratio.should < 1
+      a.bayesian_factor.should < ACCEPTANCE_THRESHOLD
     end
   end
 

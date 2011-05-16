@@ -8,23 +8,22 @@ module GreenMidget
 
     EXTERNAL_LINK_REGEX = Regexp.new(/(#{ EMAIL_REGEX })|(#{ URL_REGEX })/)
 
-    # these are left out when scanning for words
-    STOP_WORDS = %w(www com net biz org me)
+    STOP_WORDS = %w()
 
     MIN_CHARACTERS_IN_WORD = 3
     MAX_CHARACTERS_IN_WORD = 20
 
     WORDS_SPLIT_REGEX = Regexp.new(/\w{#{ MIN_CHARACTERS_IN_WORD },#{ MAX_CHARACTERS_IN_WORD }}/)
 
-    # all features used in the Baysian Filter in paralel with the words-occurrence probabilities
     FEATURES = %w(url_in_text email_in_text)
 
-    # Decision making: Pr(spam | user,text) <=> SPAM_TRESHOLD * Pr(ham | user,text)
-    SPAM_THRESHOLD = 3
+    # Decision making: Pr(alternative | text) <=> REJECT_THRESHOLD + Pr(null | text)
+    REJECT_THRESHOLD      = Math::log(3.0)
+    ACCEPTANCE_THRESHOLD  = 0.0
 
-    IS_SPAM = 1
-    DUNNO   = 0
-    IS_HAM  = -1
+    ALTERNATIVE = 1
+    DUNNO       = 0
+    NULL        = -1
 
     CATEGORIES = [ :ham, :spam ]
   end
