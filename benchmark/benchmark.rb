@@ -17,7 +17,7 @@ REPETITIONS.times do
   @train_shit << Benchmark.measure{ a.classify_as! :spam }.real
   @train_cool << Benchmark.measure{ a.classify_as! :ham }.real
 
-  SpamClassificationIndex.class_eval do
+  GreenMidgetRecords.class_eval do
     def self.[](key)
       find_by_key(key)
     end
@@ -25,7 +25,7 @@ REPETITIONS.times do
 
   @slow << Benchmark.measure{ a.classify }.real
 
-  SpamClassificationIndex.class_eval do
+  GreenMidgetRecords.class_eval do
     def self.[](key)
       key = key.to_s
       @@cache ||= {}

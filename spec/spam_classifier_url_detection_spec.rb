@@ -3,7 +3,7 @@ require 'spec_helper'
 
 require File.expand_path('../../lib/spam_classifier', __FILE__);
 
-module SpamClassifier
+module GreenMidget
   describe UrlDetection do
     it 'should not detect a url' do
       UrlDetection.new('not a url').any?.should_not be_true

@@ -1,15 +1,15 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'fileutils'
 require 'rake'
-require File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate', 'create_spam_classification_index')
+require File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate', 'create_green_midget_records')
 
 namespace :spam_classifier do
   desc "prepare this project for a world without spam"
   task :setup => :environment do
-    include SpamClassifier
+    include GreenMidget
 
-    unless SpamClassificationIndex.table_exists?
-      CreateSpamClassificationIndex.up
+    unless GreenMidgetRecords.table_exists?
+      CreateGreenMidgetRecords.up
     end
 
     keys = ["url_in_text", "email_in_text"].map do |feature|
@@ -22,8 +22,8 @@ namespace :spam_classifier do
 
     puts '==  Creating records ==='
     keys.each { |key|
-      unless SpamClassificationIndex.find_by_key(key)
-        SpamClassificationIndex.create!(key)
+      unless GreenMidgetRecords.find_by_key(key)
+        GreenMidgetRecords.create!(key)
         puts "--  Created #{key}"
       end
     }

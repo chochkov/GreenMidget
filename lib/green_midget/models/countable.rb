@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-module SpamClassifier
+module GreenMidget
   class Countable
     include Constants
     attr_accessor :key
@@ -19,11 +19,11 @@ module SpamClassifier
     end
 
     def [](category)
-      SpamClassificationIndex[record_key(category)].value.to_f
+      GreenMidgetRecords[record_key(category)].value.to_f
     end
 
     def increment(category)
-      SpamClassificationIndex[record_key(category)].increment
+      GreenMidgetRecords[record_key(category)].increment
     end
 
     def record_key(category)

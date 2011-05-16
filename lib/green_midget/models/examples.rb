@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-module SpamClassifier
+module GreenMidget
   class Examples < Countable
     PREFIX                  = 'examples_with_feature::'
     NO_EXAMPLES_GIVEN_ERROR = 'Training examples must be provided for all categories before classification.'

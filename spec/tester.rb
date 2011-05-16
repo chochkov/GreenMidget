@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-class Tester < SpamClassifier::Base
+class Tester < GreenMidget::Base
   attr_accessor :text
 
   ALPHABETIC_INDEX = ('a'..'z').to_a
@@ -44,6 +44,6 @@ class Tester < SpamClassifier::Base
   private
 
   def cache
-    SpamClassifier::SpamClassificationIndex.fetch_all(words)
+    GreenMidget::GreenMidgetRecords.fetch_all(words)
   end
 end

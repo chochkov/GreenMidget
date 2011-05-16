@@ -3,7 +3,7 @@
   require File.join(File.dirname(__FILE__), file)
 end
 
-module SpamClassifier
+module GreenMidget
   class Base
     include Logger
     include Constants
@@ -17,7 +17,7 @@ module SpamClassifier
         end
       end
 
-      SpamClassificationIndex.fetch_all(words)
+      GreenMidgetRecords.fetch_all(words)
       log_classification
 
       ratio = criterion_ratio
@@ -33,14 +33,14 @@ module SpamClassifier
 
     def classify_as!(category)
       category = category.to_sym
-      SpamClassificationIndex.fetch_all(words)
+      GreenMidgetRecords.fetch_all(words)
 
       keys = [ Words.many(words), Features.many(present_features), Examples.many_with_general(features) ].flatten.map do |object|
         object.record_key(category)
       end
 
-      SpamClassificationIndex.increment(keys)
-      SpamClassificationIndex.write!
+      GreenMidgetRecords.increment(keys)
+      GreenMidgetRecords.write!
       log_training
     end
 
@@ -106,7 +106,7 @@ module SpamClassifier
     # ------ Probabilities Calculation --------
 
     # We use the ratio between Spam Probability and Ham Probability as decision criterion_ratio.
-    # We do individual word-occurrence analysis as well as SpamClassifier::FEATURES list of features
+    # We do individual word-occurrence analysis as well as GreenMidget::FEATURES list of features
     # with words and features being naively considered independent:
     # - text analysis i.e. Pr(category | text) = Pr(category | word_1) * .. * Pr(category | word_N)
     # - features - eg. url found in text => Pr(category | url_in_text)

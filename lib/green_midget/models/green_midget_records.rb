@@ -1,7 +1,7 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-module SpamClassifier
-  class SpamClassificationIndex < ActiveRecord::Base
-    set_table_name :spam_classification_index
+module GreenMidget
+  class GreenMidgetRecords < ActiveRecord::Base
+    set_table_name :green_midget_records
 
     def self.fetch_all(words = [])
       word_keys = words.map{ |word| [ Words::PREFIX + word + '::spam_count', Words::PREFIX + word + '::ham_count' ] }.flatten

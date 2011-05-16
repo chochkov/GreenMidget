@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-module SpamClassifier
+module GreenMidget
   class Words < Countable
     PREFIX = 'word::'
 

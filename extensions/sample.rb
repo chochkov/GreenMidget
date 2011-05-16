@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-class Sample < SpamClassifier::Base
+class Sample < GreenMidget::Base
   attr_accessor :user
 
   def initialize(text, user)

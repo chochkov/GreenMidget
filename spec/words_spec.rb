@@ -1,8 +1,8 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
-describe SpamClassifier::Words do
-  include SpamClassifier
+describe GreenMidget::Words do
+  include GreenMidget
 
   before(:each) do
     Words.delete_all
@@ -25,7 +25,7 @@ describe SpamClassifier::Words do
   #     Words['phrase'].should == Words.find_by_key(Words::PREFIX + "phrase")
   #   end
   #   it "should create new object if no key found in the datastore and add to the cache" do
-  #     Words['nonexisting'].should.eql? Words.class_eval{ new(SpamClassifier::Words::PREFIX + 'nonexisting') }
+  #     Words['nonexisting'].should.eql? Words.class_eval{ new(GreenMidget::Words::PREFIX + 'nonexisting') }
   #     Words.find_by_key(Words::PREFIX + 'nonexisting').should == nil
   #   end
   # end

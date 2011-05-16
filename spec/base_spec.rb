@@ -2,11 +2,11 @@
 require 'spec_helper'
 require File.join(File.dirname(__FILE__), 'tester')
 
-describe SpamClassifier::Base do
-  include SpamClassifier
+describe GreenMidget::Base do
+  include GreenMidget
 
   before(:each) do
-    SpamClassificationIndex.delete_all
+    GreenMidgetRecords.delete_all
     [
       {:key => "#{ Words::PREFIX    }this::spam_count",             :value => 701  },
       {:key => "#{ Words::PREFIX    }this::ham_count",              :value => 11   },
@@ -35,7 +35,7 @@ describe SpamClassifier::Base do
       {:key => "#{ Examples::PREFIX }email_in_text::spam_count",    :value => 1000 },
       {:key => "#{ Examples::PREFIX }email_in_text::ham_count",     :value => 1000 },
     ].each do |entry|
-      SpamClassificationIndex.create!(entry[:key]).update_attribute(:value, entry[:value])
+      GreenMidgetRecords.create!(entry[:key]).update_attribute(:value, entry[:value])
     end
   end
 
@@ -49,7 +49,7 @@ describe SpamClassifier::Base do
       should == (71.0/1000 * 90.0/1000 * 811.0/1000 * 1000.0/(1000+1000)).round(5)
   end
 
-  describe 'SpamClassifierProbabilities#criterion_ratio' do
+  describe 'GreenMidgetProbabilities#criterion_ratio' do
     it "should be smaller for a smaller number of spammy words" do
       Tester.new('this dirty test').criterion_ratio.should > Tester.new('this test').criterion_ratio
     end
@@ -129,10 +129,10 @@ describe SpamClassifier::Base do
       a = Tester.new 'stuff unknown sofar'
       lambda {
         a.classify_as! :spam
-      }.should change { SpamClassificationIndex.count }.by(6)
+      }.should change { GreenMidgetRecords.count }.by(6)
       lambda {
         a.classify_as! :ham
-      }.should_not change { SpamClassificationIndex.count }
+      }.should_not change { GreenMidgetRecords.count }
     end
   end
 
@@ -200,7 +200,7 @@ describe SpamClassifier::Base do
       pending('todo')
     end
     it "throw an exception if no training examples were given, but it's asked for classification" do
-      # if SpamClassificationIndex.count(:spam) or SpamClassificationIndex.count(:ham) is 0.0 => throw an exception
+      # if GreenMidgetRecords.count(:spam) or GreenMidgetRecords.count(:ham) is 0.0 => throw an exception
       pending('todo')
     end
   end

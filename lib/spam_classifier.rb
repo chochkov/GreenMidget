@@ -2,17 +2,16 @@
 # TODO: do we need that here ?
 require 'active_record'
 
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'spam_classifier')
+require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'green_midget')
+require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'base')
 
-require File.join(File.expand_path(__FILE__), '..', 'spam_classifier', 'base')
-
-Dir["#{File.dirname(__FILE__)}/spam_classifier/models/*.rb"].each do |model|
+Dir["#{File.dirname(__FILE__)}/green_midget/models/*.rb"].each do |model|
   require model
 end
 
 require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'spam_check')
 
-if (classifier = Gem.searcher.find('spam_classifier'))
+if (classifier = Gem.searcher.find('green_midget'))
   path = classifier.full_gem_path
   Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
 end

@@ -1,8 +1,8 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
-describe SpamClassifier::Features do
-  include SpamClassifier
+describe GreenMidget::Features do
+  include GreenMidget
 
   before(:each) do
     Features.delete_all
@@ -11,7 +11,7 @@ describe SpamClassifier::Features do
 
   # describe "#[]()" do
   #   it "should first look in the cache and take the value from there if it exists" do
-  #     SpamClassificationIndex.fetch_all
+  #     GreenMidgetRecords.fetch_all
   #     Features.find_by_key("#{ Features::PREFIX }notfound").should == nil
   #     Features['notfound'].should_not == nil
   #   end

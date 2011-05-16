@@ -1,5 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-module SpamClassifier
+module GreenMidget
   class UrlDetection
     def initialize(text)
       @text = text
@@ -12,12 +12,12 @@ module SpamClassifier
     private
 
     def urls
-      @text.scan(SpamClassifier::URL_REGEX).flatten.reject(&:nil?)
+      @text.scan(GreenMidget::URL_REGEX).flatten.reject(&:nil?)
     end
 
     def non_tolerated_urls
       urls.reject do |url|
-        url.to_s.downcase =~ SpamClassifier::TOLERATED_URLS
+        url.to_s.downcase =~ GreenMidget::TOLERATED_URLS
       end
     end
   end

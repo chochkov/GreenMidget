@@ -1,8 +1,8 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'spec_helper'
 
-describe SpamClassifier::Examples do
-  include SpamClassifier
+describe GreenMidget::Examples do
+  include GreenMidget
 
   before(:each) do
     Examples.delete_all
