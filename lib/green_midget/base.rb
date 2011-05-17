@@ -55,10 +55,6 @@ module GreenMidget
       features.select { |feature| feature_present?(feature) }
     end
 
-    def missing_features
-      features - present_features
-    end
-
     def feature_present?(feature)
       method = :"#{feature}?"
       if respond_to?(method, true)
@@ -108,12 +104,12 @@ module GreenMidget
     def bayesian_factor
       log_probability_null, log_probability_alternative = CATEGORIES.map { |category| log_probability(category) }
       case
-        when log_probability_null.eql?(0.0) && log_probability_alternative < 0.0
-          ACCEPT_ALTERNATIVE_MIN
-        when log_probability_alternative.eql?(0.0) && log_probability_null < 0.0
-          - 1.0
-        when log_probability_alternative.eql?(0.0) && log_probability_null.eql?(0.0)
-          1.0
+        when (log_probability_null.eql?(0.0) && log_probability_alternative < 0.0)
+          ACCEPT_ALTERNATIVE_MIN + 1.0
+        when (log_probability_alternative.eql?(0.0) && log_probability_null < 0.0)
+          REJECT_ALTERNATIVE_MAX - 1.0
+        when (log_probability_alternative + log_probability_null == 0)
+          (REJECT_ALTERNATIVE_MAX + ACCEPT_ALTERNATIVE_MIN) / 2.0
         else
           log_probability_alternative - log_probability_null
         end
