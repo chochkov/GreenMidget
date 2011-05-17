@@ -5,78 +5,81 @@ describe GreenMidget::Examples do
   include GreenMidget
 
   before(:each) do
-    Examples.delete_all
-    Examples.class_variable_set("@@cache", {})
+    GreenMidgetRecords.delete_all
+    GreenMidgetRecords.class_variable_set("@@cache", {})
   end
 
-  # describe "#[]()" do
-  #   before do
-  #     @call_any = lambda do
-  #       Examples['any']
-  #     end
-  #   end
-  # 
-  #   it "should return training_examples_with_feature::any if passed a (new) feature key that has no examples yet" do
-  #     record_any = Examples.create!(Examples::PREFIX + "any")
-  #     record_any.update_attributes({:spam_count => 1000, :ham_count => 1000})
-  #     Examples.find_by_key(Examples::PREFIX + "new").should == nil
-  #     Examples['new'][:spam].should == record_any[:spam]
-  #     Examples['new'][:ham].should  == record_any[:ham]
-  #   end
-  # 
-  #   it "should return the feature's own example counts if these exist" do
-  #     Examples.create!(Examples::PREFIX + "new")
-  #     Examples.find_by_key(Examples::PREFIX + 'new').update_attributes({ :spam_count => 1, :ham_count => 3 })
-  #     Examples['new'][:spam].should == 1
-  #     Examples['new'][:ham].should  == 3
-  #   end
-  # 
-  #   it "should throw an error if training_examples_with_feature::any isn't found" do
-  #     @call_any.should raise_error(ZeroDivisionError)
-  #   end
-  # 
-  #   it "should throw an error if training_examples_with_feature::any has a zero spam_count and ham_count" do
-  #     Examples.create!(Examples::PREFIX + "any")
-  #     @call_any.should raise_error(ZeroDivisionError)
-  #   end
-  # 
-  #   it "should throw an error if training_examples_with_feature::any has a zero spam_count or ham_count" do
-  #     Examples.create!(Examples::PREFIX + "any")
-  #     Examples.find_by_key(Examples::PREFIX + "any").update_attributes({ :spam_count => 0, :ham_count => 1 })
-  #     @call_any.should raise_error(ZeroDivisionError)
-  #   end
-  # 
-  #   it "should not throw an error if both columns are positive" do
-  #     Examples.create!(Examples::PREFIX + "any")
-  #     Examples.find_by_key(Examples::PREFIX + "any").update_attributes({ :spam_count => 1, :ham_count => 1 })
-  #     @call_any.should_not raise_error(ZeroDivisionError)
-  #   end
-  # end
-  # 
-  # describe "#probability_for" do
-  #   it "should return the probability of a feature falling into category as: Examples[feature][category] / (Examples[feature][:spam] + Examples[feature][:ham])" do
-  #     Examples.create!(Examples::PREFIX + "url_in_text").update_attributes({:spam_count => 150, :ham_count => 1000})
-  #     Examples['url_in_text'].probability_for(:spam).should == 150.0/(1000 + 150)
-  #   end
-  # end
-  # 
-  # describe "#no_examples?" do
-  #   before(:each) do
-  #     @record = Examples.create!(Examples::PREFIX + "url_in_text")
-  #   end
-  # 
-  #   it "should return true if spam_count and ham_count are zero" do
-  #     @record.no_examples?.should be_true
-  #   end
-  # 
-  #   it "should return true if spam_count or ham_count are zero" do
-  #     @record.update_attributes({ :spam_count => 1 })
-  #     @record.no_examples?.should be_true
-  #   end
-  # 
-  #   it "should should return false if both spam_count and ham_count are positive" do
-  #     @record.update_attributes({ :spam_count => 1, :ham_count => 1 })
-  #     @record.no_examples?.should be_false
-  #   end
-  # end
+  describe "#[]()" do
+    before do
+      @call_any = lambda do
+        Examples.general
+      end
+    end
+
+    it "should return the general feature examples if passed a (new) feature key that has no examples yet" do
+      GreenMidgetRecords.create(Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ CATEGORIES.first }_count").update_attribute(:value, 1000)
+      GreenMidgetRecords.create(Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ CATEGORIES.last }_count").update_attribute(:value, 1000)
+      GreenMidgetRecords.find_by_key(Examples.prefix + "new::#{ CATEGORIES.first }_count").should == nil
+      GreenMidgetRecords.fetch_all
+      CATEGORIES.each do |category|
+        Examples['new'][category].should == Examples.general[category]
+      end
+    end
+    it "should return the feature's own example counts if these exist" do
+      GreenMidgetRecords.create(Examples.prefix + "new::#{ CATEGORIES.first }_count").update_attribute(:value, 3)
+      GreenMidgetRecords.create(Examples.prefix + "new::#{ CATEGORIES.last }_count").update_attribute(:value, 1)
+      Examples['new'][CATEGORIES.first].should  == 3
+    end
+
+    it "should throw an error if the general feature examples isn't found" do
+      @call_any.should raise_error(ZeroDivisionError)
+    end
+
+    it "should throw an error if the general feature examples has a zero spam_count and ham_count" do
+      GreenMidgetRecords.create(Examples.prefix + "#{ Examples::GENERAL_FEATURE_NAME }::#{ CATEGORIES.first }_count")
+      @call_any.should raise_error(ZeroDivisionError)
+    end
+
+    it "should throw an error if the general feature examples has a zero spam_count or ham_count" do
+      GreenMidgetRecords.create(Examples.prefix + "#{ Examples::GENERAL_FEATURE_NAME }::#{ CATEGORIES.first }_count").update_attribute(:value, 0)
+      @call_any.should raise_error(ZeroDivisionError)
+    end
+
+    it "should not throw an error if both columns are positive" do
+      GreenMidgetRecords.create(Examples.prefix + "#{ Examples::GENERAL_FEATURE_NAME }::#{ CATEGORIES.first }_count").update_attribute(:value, 2)
+      GreenMidgetRecords.create(Examples.prefix + "#{ Examples::GENERAL_FEATURE_NAME }::#{ CATEGORIES.last }_count").update_attribute(:value, 1)
+      @call_any.should_not raise_error(ZeroDivisionError)
+    end
+  end
+
+  describe "#probability_for" do
+    it "should return the probability of a feature falling into category as: Examples[feature][category] / (Examples[feature][:spam] + Examples[feature][:ham])" do
+      GreenMidgetRecords.create(Examples['url_in_text'].record_key(CATEGORIES.first)).update_attribute(:value, 1000)
+      GreenMidgetRecords.create(Examples['url_in_text'].record_key(CATEGORIES.last)).update_attribute(:value, 150)
+      Examples['url_in_text'].probability_for(CATEGORIES.last).should == 150.0/(1000 + 150)
+    end
+  end
+
+  describe "#no_examples?" do
+    before(:each) do
+      GreenMidgetRecords.create(Examples['url_in_text'].record_key(CATEGORIES.first))
+      GreenMidgetRecords.create(Examples['url_in_text'].record_key(CATEGORIES.first))
+      @object = Examples['url_in_text']
+    end
+
+    it "should return true if spam_count and ham_count are zero" do
+      @object.no_examples?.should be_true
+    end
+
+    it "should return true if spam_count or ham_count are zero" do
+      @object.increment(CATEGORIES.first)
+      @object.no_examples?.should be_true
+    end
+
+    it "should should return false if both spam_count and ham_count are positive" do
+      @object.increment(CATEGORIES.first)
+      @object.increment(CATEGORIES.last)
+      @object.no_examples?.should be_false
+    end
+  end
 end

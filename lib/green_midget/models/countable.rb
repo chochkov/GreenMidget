@@ -14,7 +14,7 @@ module GreenMidget
       new(key)
     end
 
-    def self.many(keys)
+    def self.objects(keys)
       keys.map { |key| new(key) }
     end
 

@@ -23,8 +23,9 @@ module GreenMidget
       self[GENERAL_FEATURE_NAME]
     end
 
-    def self.many_with_general(features)
-      many(features + [ GENERAL_FEATURE_NAME ])
+    def self.objects(features, with_general = false)
+      features += with_general ? [ GENERAL_FEATURE_NAME ] : []
+      super(features)
     end
 
     # Pr(category)

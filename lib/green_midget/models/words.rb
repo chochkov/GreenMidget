@@ -9,5 +9,12 @@ module GreenMidget
     def probability_for(category)
       self[category] / Examples.general[category]
     end
+
+    def self.record_keys(words, category = nil)
+      categories = [ category || GreenMidget::CATEGORIES ].flatten
+      words.map do |word|
+        categories.map{ |category| Words[word].record_key(category) }
+      end.flatten
+    end
   end
 end

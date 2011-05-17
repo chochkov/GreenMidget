@@ -35,7 +35,7 @@ describe GreenMidget::Base do
       {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 1000 },
       {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 1000 },
     ].each do |entry|
-      GreenMidgetRecords.create!(entry[:key]).update_attribute(:value, entry[:value])
+      GreenMidgetRecords.create(entry[:key]).update_attribute(:value, entry[:value])
     end
   end
 
@@ -152,33 +152,6 @@ describe GreenMidget::Base do
     it "should not consider parts of website url as individual words" do
       Tester.new('www.myguy.com http://wearegeil.org').words.should == []
     end
-  end
-
-  describe "#pass_ham_heuristics?" do
-    # it "shouldn't deal with comments having no url/email and less than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
-    #   Tester.new('that seems quite alright', User.new, Comment).pass_ham_heuristics?.should_not be_true
-    # end
-    # it "should deal with comments having url/email independently of their word-count" do
-    #   Tester.new('bye comment bad@wrong.com', User.new, Comment).pass_ham_heuristics?.should be_true
-    # end
-    # it "should deal with comments having more than LOWER_WORDS_LIMIT_FOR_COMMENTS words" do
-    #   Tester.new_with_random_text(LOWER_WORDS_LIMIT_FOR_COMMENTS+1).pass_ham_heuristics?.should be_true
-    # end
-    # it "shouldn't deal with Posts having no url/email and less than LOWER_WORDS_LIMIT_FOR_POSTS words" do
-    #   Tester.new('That is an example of a post that should not be dealt with by us', User.new, Post).pass_ham_heuristics?.should_not be_true
-    # end
-    # it "should deal with Posts having a url/email independently of their word-count" do
-    #   Tester.new('bye post bad@wrong.com', User.new, Post).pass_ham_heuristics?.should be_true
-    # end
-    # it "should throw ArgumentError if given unexpected @spammable_class argument" do
-    #   lambda{
-    #     Tester.new('anything', User.new, 'Posttt').pass_ham_heuristics?
-    #   }.should raise_error(ArgumentError)
-    # end
-    #
-    # it "should say DUNNO for items, which have words but none of these words has been seen by the filter" do
-    #   Tester.new_with_random_text(LOWER_WORDS_LIMIT_FOR_COMMENTS+1, 10).classify.should == 0
-    # end
   end
 
   describe "#known_words" do

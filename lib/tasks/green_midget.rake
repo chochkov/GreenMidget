@@ -23,7 +23,7 @@ namespace :spam_classifier do
     puts '==  Creating records ==='
     keys.each { |key|
       unless GreenMidgetRecords.find_by_key(key)
-        GreenMidgetRecords.create!(key)
+        GreenMidgetRecords.create(key)
         puts "--  Created #{key}"
       end
     }

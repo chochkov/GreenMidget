@@ -4,15 +4,15 @@ module GreenMidget
     set_table_name :green_midget_records
 
     def self.fetch_all(words = [])
-      word_keys = words.map{ |word| [ Words::PREFIX + word + '::spam_count', Words::PREFIX + word + '::ham_count' ] }.flatten
-      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features::PREFIX }%' OR `key` LIKE '#{ Examples::PREFIX }%'", word_keys ])
+      words_keys = Words.record_keys(words)
+      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features.prefix }%' OR `key` LIKE '#{ Examples.prefix }%'", words_keys ])
 
       @@cache = records.inject({}) do |memo, record|
         memo[record.key] = record
         memo
       end
 
-      word_keys.inject(@@cache) do |memo, word|
+      words_keys.inject(@@cache) do |memo, word|
         memo[word] ||= new(word)
         memo
       end

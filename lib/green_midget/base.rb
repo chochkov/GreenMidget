@@ -34,7 +34,7 @@ module GreenMidget
       category = category.to_sym
       GreenMidgetRecords.fetch_all(words)
 
-      keys = [ Words.many(words), Features.many(present_features), Examples.many_with_general(features) ].flatten.map do |object|
+      keys = [ Words.objects(words), Features.objects(present_features), Examples.objects(features, true) ].flatten.map do |object|
         object.record_key(category)
       end
 
