@@ -9,22 +9,21 @@ module GreenMidget
     include Constants
 
     def classify
-      # check heuristics in the order
       CATEGORIES.each do |category|
         if respond_to?(:"pass_#{category}_heuristics?") && send(:"pass_#{category}_heuristics?")
           classify_as!(category)
-          return "IS_#{category}".constantize
+          return HYPOTHESES[category]
         end
       end
 
       GreenMidgetRecords.fetch_all(words)
       register_classification
 
-      ratio = bayesian_factor
+      factor = bayesian_factor
       case
-      when ratio >= REJECT_THRESHOLD
+      when factor >= ACCEPT_ALTERNATIVE_MIN
         ALTERNATIVE
-      when ratio >= ACCEPTANCE_THRESHOLD
+      when factor >= REJECT_ALTERNATIVE_MAX
         DUNNO
       else
         NULL
@@ -82,7 +81,7 @@ module GreenMidget
     def words
       strip_external_links.scan(WORDS_SPLIT_REGEX).uniq.
         map(&:downcase).
-        reject { |w| STOP_WORDS.include?(w) }
+        reject { |word| STOP_WORDS.include?(word) }
     end
 
     def known_words(category)
@@ -109,30 +108,26 @@ module GreenMidget
     def bayesian_factor
       log_probability_null, log_probability_alternative = CATEGORIES.map { |category| log_probability(category) }
       case
-      when log_probability_null.eql?(0.0) && log_probability_alternative < 0.0
-        REJECT_THRESHOLD
-      when log_probability_alternative.eql?(0.0) && log_probability_null < 0.0
-        - 1.0
-      when log_probability_alternative.eql?(0.0) && log_probability_null.eql?(0.0)
-        1.0
-      else
-        log_probability_alternative - log_probability_null
-      end
+        when log_probability_null.eql?(0.0) && log_probability_alternative < 0.0
+          ACCEPT_ALTERNATIVE_MIN
+        when log_probability_alternative.eql?(0.0) && log_probability_null < 0.0
+          - 1.0
+        when log_probability_alternative.eql?(0.0) && log_probability_null.eql?(0.0)
+          1.0
+        else
+          log_probability_alternative - log_probability_null
+        end
     end
 
     def log_probability(category)
-      from_words = log_probability_words(category)
-      if from_words.eql?(0.0)
+      if known_words(category).count.zero?
         0.0
       else
-        from_words + log_probability_features(category) + Math::log(Examples.probability_for(category))
+        log_probability_words(category) + log_probability_features(category) + Math::log(Examples.probability_for(category))
       end
     end
 
     def log_probability_words(category)
-      if known_words(category).count.zero?
-        return 0.0
-      end
       probability = known_words(category).inject(0.0) do |memo, word|
         memo + Math::log(Words[word].probability_for(category))
       end

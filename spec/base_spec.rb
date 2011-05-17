@@ -8,32 +8,32 @@ describe GreenMidget::Base do
   before(:each) do
     GreenMidgetRecords.delete_all
     [
-      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.first }_count", :value => 701  },
-      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.last  }_count", :value => 11   },
-      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.first }_count", :value => 9    },
-      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.last  }_count", :value => 71   },
-      {:key => "#{ Words::PREFIX    }goes::#{          CATEGORIES.first }_count", :value => 90   },
+      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.last  }_count", :value => 701  },
+      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.first }_count", :value => 11   },
+      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.last  }_count", :value => 9    },
+      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.first }_count", :value => 71   },
       {:key => "#{ Words::PREFIX    }goes::#{          CATEGORIES.last  }_count", :value => 90   },
-      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.first }_count", :value => 311  },
-      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.last  }_count", :value => 290  },
-      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.first }_count", :value => 222  },
-      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.last  }_count", :value => 45   },
-      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.first }_count", :value => 11   },
-      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.last  }_count", :value => 133  },
-      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.first }_count", :value => 6    },
-      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.last  }_count", :value => 811  },
-      {:key => "#{ Words::PREFIX    }zero::#{          CATEGORIES.first }_count", :value => 0    },
+      {:key => "#{ Words::PREFIX    }goes::#{          CATEGORIES.first }_count", :value => 90   },
+      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.last  }_count", :value => 311  },
+      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.first }_count", :value => 290  },
+      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.last  }_count", :value => 222  },
+      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.first }_count", :value => 45   },
+      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.last  }_count", :value => 11   },
+      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.first }_count", :value => 133  },
+      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.last  }_count", :value => 6    },
+      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.first }_count", :value => 811  },
       {:key => "#{ Words::PREFIX    }zero::#{          CATEGORIES.last  }_count", :value => 0    },
-      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 440  },
-      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.last  }_count", :value => 40   },
-      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 112  },
-      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 9    },
-      {:key => "#{ Examples::PREFIX }any::#{           CATEGORIES.first }_count", :value => 1000 },
+      {:key => "#{ Words::PREFIX    }zero::#{          CATEGORIES.first }_count", :value => 0    },
+      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.last  }_count", :value => 440  },
+      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 40   },
+      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 112  },
+      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 9    },
       {:key => "#{ Examples::PREFIX }any::#{           CATEGORIES.last  }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 1000 },
+      {:key => "#{ Examples::PREFIX }any::#{           CATEGORIES.first }_count", :value => 1000 },
       {:key => "#{ Examples::PREFIX }url_in_text::#{   CATEGORIES.last  }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 1000 },
+      {:key => "#{ Examples::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 1000 },
       {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 1000 },
+      {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 1000 },
     ].each do |entry|
       GreenMidgetRecords.create!(entry[:key]).update_attribute(:value, entry[:value])
     end
@@ -63,15 +63,15 @@ describe GreenMidget::Base do
     end
 
     it "considers 'test goes words' ham" do
-      Tester.new('test goes words').bayesian_factor.should < ACCEPTANCE_THRESHOLD
+      Tester.new('test goes words').bayesian_factor.should < REJECT_ALTERNATIVE_MAX
     end
 
     it "considers 'rid goes dirty' spam" do
-      Tester.new('rid goes dirty').bayesian_factor.should >= REJECT_THRESHOLD
+      Tester.new('rid goes dirty').bayesian_factor.should >= ACCEPT_ALTERNATIVE_MIN
     end
 
     it "doesn't know whether 'zero goes rid' is spam or not" do
-      Tester.new('zero goes rid').bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
+      Tester.new('zero goes rid').bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
     end
 
     it "thinks of 'test boss@offshore.com' as more spam than just 'test'" do
@@ -90,25 +90,25 @@ describe GreenMidget::Base do
     end
 
     it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
-      Tester.new('zero newword heuristicspass').bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
+      Tester.new('zero newword heuristicspass').bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
     end
 
     it "should say ALTERNATIVE if it has spam score for a message and doesn't have ham score for it" do
       a = Tester.new('nosuchword nowordsuch heuristicspass')
       a.log_probability(:spam).should == 0.0
       a.log_probability(:ham).should == 0.0
-      a.bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
+      a.bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
       a.classify_as!(:spam)
-      a.bayesian_factor.should >= REJECT_THRESHOLD
+      a.bayesian_factor.should >= ACCEPT_ALTERNATIVE_MIN
     end
 
     it "should say NULL if it has ham score for a message and doesn't have spam score for it" do
       a = Tester.new('suchwordno nowordsuch heuristicspasss')
       a.log_probability(:spam).should == 0.0
       a.log_probability(:ham).should == 0.0
-      a.bayesian_factor.between?(ACCEPTANCE_THRESHOLD, REJECT_THRESHOLD).should be_true
+      a.bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
       a.classify_as!(:ham)
-      a.bayesian_factor.should < ACCEPTANCE_THRESHOLD
+      a.bayesian_factor.should < REJECT_ALTERNATIVE_MAX
     end
   end
 

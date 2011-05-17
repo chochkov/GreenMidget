@@ -17,14 +17,15 @@ module GreenMidget
 
     FEATURES = %w(url_in_text email_in_text)
 
-    # Decision making: Pr(alternative | text) <=> REJECT_THRESHOLD + Pr(null | text)
-    REJECT_THRESHOLD      = Math::log(3.0)
-    ACCEPTANCE_THRESHOLD  = 0.0
+    # Decision making: Log(Pr(alternative | text)) - Log(Pr(null | text)) <=> [ REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN ]
+    ACCEPT_ALTERNATIVE_MIN  = Math::log(3.0)
+    REJECT_ALTERNATIVE_MAX  = 0.0
 
     ALTERNATIVE = 1
     DUNNO       = 0
     NULL        = -1
 
-    CATEGORIES = [ :ham, :spam ]
+    CATEGORIES  = [ :ham, :spam ]
+    HYPOTHESES  = { :ham => NULL, :spam => ALTERNATIVE }
   end
 end
