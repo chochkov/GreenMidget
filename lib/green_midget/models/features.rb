@@ -10,6 +10,10 @@ module GreenMidget
       self[category] / Examples[feature][category]
     end
 
+    def log_ratio
+      Math::log(probability_for(CATEGORIES.last) / probability_for(CATEGORIES.first))
+    end
+
     def feature
       key.gsub(/(^#{ PREFIX })|(::\w+_count$)/, '')
     end

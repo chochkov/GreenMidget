@@ -19,7 +19,7 @@ module GreenMidget
       GreenMidgetRecords.fetch_all(words)
       register_classification
 
-      factor = bayesian_factor
+      factor = log_ratio
       case
       when factor >= ACCEPT_ALTERNATIVE_MIN
         ALTERNATIVE
@@ -80,14 +80,6 @@ module GreenMidget
         reject { |word| STOP_WORDS.include?(word) }
     end
 
-    def known_words(category)
-      words.reject { |word| Words[word][category] == 0.0 }
-    end
-
-    def new_words(category)
-      words - known_words(category)
-    end
-
     def strip_external_links
       text.gsub(EXTERNAL_LINK_REGEX, '')
     end
@@ -100,40 +92,8 @@ module GreenMidget
 
     # ------ Probabilities Calculation --------
 
-    # log [Pr(category = alternative | text) / Pr(category = null | text)]
-    def bayesian_factor
-      log_probability_null, log_probability_alternative = CATEGORIES.map { |category| log_probability(category) }
-      case
-        when (log_probability_null.eql?(0.0) && log_probability_alternative < 0.0)
-          ACCEPT_ALTERNATIVE_MIN + 1.0
-        when (log_probability_alternative.eql?(0.0) && log_probability_null < 0.0)
-          REJECT_ALTERNATIVE_MAX - 1.0
-        when (log_probability_alternative + log_probability_null == 0)
-          (REJECT_ALTERNATIVE_MAX + ACCEPT_ALTERNATIVE_MIN) / 2.0
-        else
-          log_probability_alternative - log_probability_null
-        end
-    end
-
-    def log_probability(category)
-      if known_words(category).count.zero?
-        0.0
-      else
-        log_probability_words(category) + log_probability_features(category) + Math::log(Examples.probability_for(category))
-      end
-    end
-
-    def log_probability_words(category)
-      probability = known_words(category).inject(0.0) do |memo, word|
-        memo + Math::log(Words[word].probability_for(category))
-      end
-      probability += Math::log(1.0 / Examples.total_count) * new_words(category).count
-    end
-
-    def log_probability_features(category)
-      present_features.inject(0.0) do |memo, feature|
-        memo + Math::log(Features[feature].probability_for(category))
-      end
+    def log_ratio
+      Examples.log_ratio + words.map{ |word| Words[word].log_ratio }.sum + present_features.map{ |feature| Features[feature].log_ratio }.sum
     end
   end
 end

@@ -39,19 +39,14 @@ describe GreenMidget::Base do
     end
   end
 
-  it "should calculate spam probability of 2.43e-06 for 'test goes words'" do
-    Tester.new('test goes words').log_probability(:spam).round(5).
-      should == Math::log(9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)).round(5)
-  end
-
-  it "should calculate ham probability of 0.00259 for 'test goes words'" do
-    Tester.new('test goes words').log_probability(:ham).round(5).
-      should == Math::log(71.0/1000 * 90.0/1000 * 811.0/1000 * 1000.0/(1000+1000)).round(5)
-  end
+  # it "should calculate spam probability of 2.43e-06 for 'test goes words'" do
+  #   Tester.new('test goes words').log_ratio(:spam).round(5).
+  #     should == Math::log(9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)).round(5)
+  # end
 
   describe 'GreenMidgetProbabilities#bayesian_factor' do
     it "should be smaller for a smaller number of spammy words" do
-      Tester.new('this dirty test').bayesian_factor.should > Tester.new('this test').bayesian_factor
+      Tester.new('this dirty test').log_ratio.should > Tester.new('this test').log_ratio
     end
   end
 
@@ -63,52 +58,48 @@ describe GreenMidget::Base do
     end
 
     it "considers 'test goes words' ham" do
-      Tester.new('test goes words').bayesian_factor.should < REJECT_ALTERNATIVE_MAX
+      Tester.new('test goes words').log_ratio.should < REJECT_ALTERNATIVE_MAX
     end
 
     it "considers 'rid goes dirty' spam" do
-      Tester.new('rid goes dirty').bayesian_factor.should >= ACCEPT_ALTERNATIVE_MIN
+      Tester.new('rid goes dirty').log_ratio.should >= ACCEPT_ALTERNATIVE_MIN
     end
 
     it "doesn't know whether 'zero goes rid' is spam or not" do
-      Tester.new('zero goes rid').bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
+      Tester.new('zero goes rid').log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
     end
 
     it "thinks of 'test boss@offshore.com' as more spam than just 'test'" do
-      Tester.new('test boss@offshore.com').bayesian_factor.
-        should > Tester.new('test').bayesian_factor
+      Tester.new('test boss@offshore.com').log_ratio.
+        should > Tester.new('test').log_ratio
     end
 
     it "thinks of 'test www.offshore.com' as more spam than just 'test'" do
-      Tester.new('test www.offshore.com').bayesian_factor.
-        should > Tester.new('test').bayesian_factor
+      Tester.new('test www.offshore.com').log_ratio.
+        should > Tester.new('test').log_ratio
     end
 
     it "will tolerate urls coming from known sites" do
-      Tester.new('test www.offshore.com').bayesian_factor.should >
-      Tester.new('test www.soundcloud.com').bayesian_factor
+      Tester.new('test www.offshore.com').log_ratio.should >
+      Tester.new('test www.soundcloud.com').log_ratio
     end
 
     it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
-      Tester.new('zero newword heuristicspass').bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
+      Tester.new('zero newword heuristicspass').log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
     end
 
     it "should say ALTERNATIVE if it has spam score for a message and doesn't have ham score for it" do
       a = Tester.new('nosuchword nowordsuch heuristicspass')
-      a.log_probability(:spam).should == 0.0
-      a.log_probability(:ham).should == 0.0
-      a.bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
+      a.log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
       a.classify_as!(:spam)
-      a.bayesian_factor.should >= ACCEPT_ALTERNATIVE_MIN
+      a.log_ratio.should >= ACCEPT_ALTERNATIVE_MIN
     end
 
     it "should say NULL if it has ham score for a message and doesn't have spam score for it" do
       a = Tester.new('suchwordno nowordsuch heuristicspasss')
-      a.log_probability(:spam).should == 0.0
-      a.log_probability(:ham).should == 0.0
-      a.bayesian_factor.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
+      a.log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
       a.classify_as!(:ham)
-      a.bayesian_factor.should < REJECT_ALTERNATIVE_MAX
+      a.log_ratio.should < REJECT_ALTERNATIVE_MAX
     end
   end
 
@@ -154,33 +145,20 @@ describe GreenMidget::Base do
     end
   end
 
-  describe "#known_words" do
-    it "should return an array of words for which the classifier had been given examples in the category" do
-      a = Tester.new('this new word')
-      a.known_words(:spam).should == ['this']
-      a.classify_as!(:spam)
-      a.known_words(:spam).should == a.words
-    end
-    it "known_words + new_words = words" do
-      a = Tester.new('this new word')
-      (a.known_words(:spam) + a.new_words(:spam)).should == a.words
-    end
-  end
-
-  describe "extreme cases" do
-    it "should fallback to training_examples_with_feature::any if there're no examples in the database for a particular feature" do
-      # a new feature should be added with no examples and make sure the classifier won't break
-      pending('todo')
-    end
-    it "throw an exception if no training examples were given, but it's asked for classification" do
-      # if GreenMidgetRecords.count(:spam) or GreenMidgetRecords.count(:ham) is 0.0 => throw an exception
-      pending('todo')
-    end
-  end
-
-  describe "#feature_present?" do
-    it "should throw NoMethodError if a feature look-up method has not been implemented" do
-      pending('')
-    end
-  end
+  # describe "extreme cases" do
+  #   it "should fallback to training_examples_with_feature::any if there're no examples in the database for a particular feature" do
+  #     # a new feature should be added with no examples and make sure the classifier won't break
+  #     pending('todo')
+  #   end
+  #   it "throw an exception if no training examples were given, but it's asked for classification" do
+  #     # if GreenMidgetRecords.count(:spam) or GreenMidgetRecords.count(:ham) is 0.0 => throw an exception
+  #     pending('todo')
+  #   end
+  # end
+  #
+  # describe "#feature_present?" do
+  #   it "should throw NoMethodError if a feature look-up method has not been implemented" do
+  #     pending('')
+  #   end
+  # end
 end

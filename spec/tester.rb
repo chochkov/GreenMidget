@@ -19,31 +19,11 @@ class Tester < GreenMidget::Base
     Tester.new(text)
   end
 
-  def log_probability(category)
-    cache
-    super(category)
-  end
-
-  def bayesian_factor
-    cache
-    super
-  end
-
   def words
     super
   end
 
-  def new_words(category)
-    super(category)
-  end
-
-  def known_words(category)
-    super(category)
-  end
-
-  private
-
-  def cache
-    GreenMidget::GreenMidgetRecords.fetch_all(words)
+  def log_ratio
+    super
   end
 end

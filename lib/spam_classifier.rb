@@ -9,7 +9,7 @@ Dir["#{File.dirname(__FILE__)}/green_midget/models/*.rb"].each do |model|
   require model
 end
 
-require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'spam_check')
+require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'green_midget_check')
 
 if (classifier = Gem.searcher.find('green_midget'))
   path = classifier.full_gem_path

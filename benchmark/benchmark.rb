@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec', 'tester')
 include GreenMidget
 
-REPETITIONS             = 20
+REPETITIONS             = 10
 MESSAGE_LENGTH          = 1000
 
 @train_alternative      = []
@@ -39,5 +39,5 @@ puts "Classification of known words:          #{ (@known_words.sum.to_f/REPETITI
 puts "Data fetch of known words:              #{ (@known_words_fetch.sum.to_f/REPETITIONS).round(4) }"
 puts "-------------------------------"
 puts "Classification of unknown words:        #{ (@unknown_words.sum.to_f/REPETITIONS).round(4) }"
-puts "Data fetch of known words:              #{ (@unknown_words_fetch.sum.to_f/REPETITIONS).round(4) }"
+puts "Data fetch of unknown words:            #{ (@unknown_words_fetch.sum.to_f/REPETITIONS).round(4) }"
 puts "-------------------------------"

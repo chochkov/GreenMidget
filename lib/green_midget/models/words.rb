@@ -7,7 +7,16 @@ module GreenMidget
 
     # Pr(word | category)
     def probability_for(category)
-      self[category] / Examples.general[category]
+      count = self[category]
+      if count == 0.0
+        @@smoother ||= (1.0 / Examples.general.total_count)
+      else
+        count / Examples.general[category]
+      end
+    end
+
+    def log_ratio
+      Math::log(probability_for(CATEGORIES.last) / probability_for(CATEGORIES.first))
     end
 
     def self.record_keys(words, category = nil)

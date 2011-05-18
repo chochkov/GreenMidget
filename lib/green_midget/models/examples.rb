@@ -29,8 +29,8 @@ module GreenMidget
     end
 
     # Pr(category)
-    def self.probability_for(category)
-      self[GENERAL_FEATURE_NAME].probability_for(category)
+    def self.log_ratio
+      Math::log((self[GENERAL_FEATURE_NAME].probability_for(:spam))/(self[GENERAL_FEATURE_NAME].probability_for(:ham)))
     end
 
     def self.total_count

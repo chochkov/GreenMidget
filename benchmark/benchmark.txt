@@ -1,0 +1,25 @@
+Average times in seconds from 20 repetitions and 1000 words per message:
+Number of records at start: 186854 and at the end: 223314
+-------------------------------
+Training unknown words:                 3.2656
+Training known words:                   2.7158
+-------------------------------
+Classification of known words:          1.1053
+Data fetch of known words:              0.2081
+-------------------------------
+Classification of unknown words:        1.3995
+Data fetch of known words:              0.3291
+-------------------------------
+
+Average times in seconds from 20 repetitions and 1000 words per message:
+Number of records at start: 223314 and at the end: 223314
+-------------------------------
+Training unknown words:                 0.0
+Training known words:                   0.0
+-------------------------------
+Classification of known words:          0.0
+Data fetch of known words:              0.0
+------------------------------
+Classification of unknown words:        1.4094
+Data fetch of known words:              0.3382
+-------------------------------
