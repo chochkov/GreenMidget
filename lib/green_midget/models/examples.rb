@@ -19,6 +19,15 @@ module GreenMidget
       end
     end
 
+    def [](category)
+      cache = "@@#{key}_#{category}_count"
+      if (self.class.class_variable_defined?(cache))
+        self.class.class_variable_get(cache)
+      else
+        self.class.class_variable_set(cache, super(category))
+      end
+    end
+
     def self.general
       self[GENERAL_FEATURE_NAME]
     end
@@ -28,7 +37,6 @@ module GreenMidget
       super(features)
     end
 
-    # Pr(category)
     def self.log_ratio
       Math::log((self[GENERAL_FEATURE_NAME].probability_for(:spam))/(self[GENERAL_FEATURE_NAME].probability_for(:ham)))
     end
@@ -37,7 +45,6 @@ module GreenMidget
       self[GENERAL_FEATURE_NAME].total_count
     end
 
-    # Pr(category | feature)
     def probability_for(category)
       self[category] / total_count
     end

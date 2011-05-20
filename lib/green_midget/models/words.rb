@@ -9,7 +9,7 @@ module GreenMidget
     def probability_for(category)
       count = self[category]
       if count == 0.0
-        @@smoother ||= (1.0 / Examples.general.total_count)
+        (1.0 / Examples.general.total_count)
       else
         count / Examples.general[category]
       end
