@@ -23,3 +23,39 @@ Data fetch of known words:              0.0
 Classification of unknown words:        1.4094
 Data fetch of known words:              0.3382
 -------------------------------
+
+Average times in seconds from 10 repetitions and 1000 words per message:
+Number of records at start: 0 and at the end: 19876
+-------------------------------
+Training unknown words:                 3.1881
+Training known words:                   2.3848
+-------------------------------
+Classification of known words:          0.1076
+Data fetch of known words:              0.0816
+-------------------------------
+Classification of unknown words:        0.2904
+Data fetch of unknown words:            0.2514
+
+
+
+
+
+
+Average times in seconds from 10 repetitions and 1000 words per message:
+Number of records at start: 61908 and at the end: 81164
+-------------------------------
+Training unknown words:                 3.1372
+Training known words:                   2.3531
+-------------------------------
+Classification of known words:          0.2432
+Data fetch of known words:              0.0854
+-------------------------------
+Classification of unknown words:        0.4088
+Data fetch of unknown words:            0.2348
+-------------------------------
+
+
+
+
+
+

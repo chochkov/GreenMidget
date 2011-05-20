@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec', 'tester')
 include GreenMidget
 
-REPETITIONS             = 10
+REPETITIONS             = 5
 MESSAGE_LENGTH          = 1000
 
 @train_alternative      = []
@@ -17,10 +17,11 @@ records_count_at_start  = GreenMidgetRecords.count
 REPETITIONS.times do
   a = Tester.new_with_random_text(MESSAGE_LENGTH)
 
-  @train_alternative   << Benchmark.measure{ a.classify_as! CATEGORIES.last }.real
-  @train_null          << Benchmark.measure{ a.classify_as! CATEGORIES.first }.real
-  @known_words         << Benchmark.measure{ a.classify }.real
+  @train_alternative   << Benchmark.measure{ a.classify_as! ALTERNATIVE }.real
+  @train_null          << Benchmark.measure{ a.classify_as! NULL        }.real
+
   @known_words_fetch   << Benchmark.measure{ GreenMidgetRecords.fetch_all(a.words) }.real
+  @known_words         << Benchmark.measure{ a.classify }.real
 
   b = Tester.new_with_random_text(MESSAGE_LENGTH)
 

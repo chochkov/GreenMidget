@@ -10,7 +10,7 @@ describe GreenMidget::GreenMidgetRecords do
 
   describe "#[]()" do
     it "should take words from data store if not found in the cache" do
-      word_key, phrase_key = [ 'word', 'phrase' ].map { |w| Words[w].record_key(CATEGORIES.first) }
+      word_key, phrase_key = [ 'word', 'phrase' ].map { |w| Words[w].record_key(NULL) }
       GreenMidgetRecords.fetch_all([ 'word' ])
       GreenMidgetRecords.create(phrase_key)
       GreenMidgetRecords.find_by_key(word_key).should == nil
@@ -18,7 +18,7 @@ describe GreenMidget::GreenMidgetRecords do
       GreenMidgetRecords[phrase_key].should == GreenMidgetRecords.find_by_key(phrase_key)
     end
     it "should create new object if no key found in the datastore and add to the cache" do
-      key = Words['nonexisting'].record_key(CATEGORIES.first)
+      key = Words['nonexisting'].record_key(NULL)
       GreenMidgetRecords[key].should.eql? GreenMidgetRecords.class_eval{ new(key) }
       GreenMidgetRecords.find_by_key(key).should == nil
     end
@@ -26,7 +26,7 @@ describe GreenMidget::GreenMidgetRecords do
 
   describe "#fetch_all" do
     it "should empty cache before fetching" do
-      bar_key = Words['bar'].record_key(CATEGORIES.last)
+      bar_key = Words['bar'].record_key(ALTERNATIVE)
       GreenMidgetRecords.fetch_all([ 'foo', 'bar' ])
       GreenMidgetRecords.class_variable_get("@@cache")[bar_key].should_not == nil
       GreenMidgetRecords.fetch_all([ 'foo', 'newbar' ])
@@ -37,7 +37,7 @@ describe GreenMidget::GreenMidgetRecords do
       cache['foo'].should.eql? GreenMidgetRecords.class_eval{new('foo')}
     end
     it "should fetch the system keys along with the given words" do
-      key = Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ CATEGORIES.first }_count"
+      key = Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ NULL }_count"
       GreenMidgetRecords.create(key)
       GreenMidgetRecords.fetch_all([])
       cache = GreenMidgetRecords.class_variable_get("@@cache")
@@ -45,18 +45,18 @@ describe GreenMidget::GreenMidgetRecords do
       cache.count.should == 1
     end
     it "words with zero examples or no record in the database should be present in the cache" do
-      GreenMidgetRecords.create(Words['kotoba'].record_key(CATEGORIES.first))
+      GreenMidgetRecords.create(Words['kotoba'].record_key(NULL))
       GreenMidgetRecords.fetch_all(['kotoba'])
-      GreenMidgetRecords.class_variable_get("@@cache")[Words['kotoba'].record_key(CATEGORIES.last)].should_not == nil
-      GreenMidgetRecords.create(Words['mouichidou'].record_key(CATEGORIES.first)).update_attribute(:value, 0)
-      GreenMidgetRecords.create(Words['mouichidou'].record_key(CATEGORIES.last)).update_attribute(:value, 3)
+      GreenMidgetRecords.class_variable_get("@@cache")[Words['kotoba'].record_key(ALTERNATIVE)].should_not == nil
+      GreenMidgetRecords.create(Words['mouichidou'].record_key(NULL)).update_attribute(:value, 0)
+      GreenMidgetRecords.create(Words['mouichidou'].record_key(ALTERNATIVE)).update_attribute(:value, 3)
       GreenMidgetRecords.fetch_all(['mouichidou'])
-      GreenMidgetRecords.class_variable_get("@@cache")[Words['mouichidou'].record_key(CATEGORIES.first)].should_not == nil
-      GreenMidgetRecords.class_variable_get("@@cache")[Words['mouichidou'].record_key(CATEGORIES.last)].should_not == nil
+      GreenMidgetRecords.class_variable_get("@@cache")[Words['mouichidou'].record_key(NULL)].should_not == nil
+      GreenMidgetRecords.class_variable_get("@@cache")[Words['mouichidou'].record_key(ALTERNATIVE)].should_not == nil
     end
     it "the cache should be a hash; its keys should be strings" do
-      GreenMidgetRecords.create(Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ CATEGORIES.first }_count")
-      GreenMidgetRecords.create(Features.prefix + "url_in_text::#{ CATEGORIES.first }_count")
+      GreenMidgetRecords.create(Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ NULL }_count")
+      GreenMidgetRecords.create(Features.prefix + "url_in_text::#{ NULL }_count")
       GreenMidgetRecords.fetch_all([])
       cache = GreenMidgetRecords.class_variable_get("@@cache")
       cache.class.should.eql? Hash
@@ -69,7 +69,7 @@ describe GreenMidget::GreenMidgetRecords do
 
   describe "#increment" do
     it "should increment counts first in cache and write! to store only if explicitly called" do
-      record_key = Words['stuff'].record_key(CATEGORIES.first)
+      record_key = Words['stuff'].record_key(NULL)
       GreenMidgetRecords.create(record_key)
 
       lambda {

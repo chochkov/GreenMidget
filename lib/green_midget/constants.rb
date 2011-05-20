@@ -21,11 +21,12 @@ module GreenMidget
     ACCEPT_ALTERNATIVE_MIN  = Math::log(3.0)
     REJECT_ALTERNATIVE_MAX  = 0.0
 
-    ALTERNATIVE = 1
-    DUNNO       = 0
-    NULL        = -1
+    ALTERNATIVE_RESPONSE = 1
+    DUNNO                = 0
+    NULL_RESPONSE        = -1
 
-    CATEGORIES  = [ :ham, :spam ]
-    HYPOTHESES  = { :ham => NULL, :spam => ALTERNATIVE }
+    NULL                 = :ham
+    ALTERNATIVE          = :spam
+    CATEGORIES           = [ NULL, ALTERNATIVE ]
   end
 end

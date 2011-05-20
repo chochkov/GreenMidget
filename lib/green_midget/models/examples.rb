@@ -1,35 +1,31 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module GreenMidget
   class Examples < Countable
-    PREFIX                  = 'examples_with_feature::'
     NO_EXAMPLES_GIVEN_ERROR = 'Training examples must be provided for all categories before classification.'
     GENERAL_FEATURE_NAME    = 'any'
 
-    def self.prefix; PREFIX end
+    self.prefix             = 'examples_with_feature::'
+
+    class_eval(<<-EVAL, __FILE__, __LINE__ + 1)
+      def self.#{ ALTERNATIVE }                                         # def self.ham
+        @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]       #   @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]
+      end                                                               # end
+
+      def self.#{ NULL }                                                # def self.spam
+        @@null ||= self[GENERAL_FEATURE_NAME][NULL]                     #   @@null ||= self[GENERAL_FEATURE_NAME][NULL]
+      end                                                               # end
+    EVAL
 
     def self.[](feature)
       object = super(feature)
 
       if object.no_examples? && (feature == GENERAL_FEATURE_NAME)
-        raise ZeroDivisionError.new(NO_EXAMPLES_GIVEN_ERROR)
+        raise NO_EXAMPLES_GIVEN_ERROR
       elsif object.no_examples?
-        super(GENERAL_FEATURE_NAME)
+        super GENERAL_FEATURE_NAME
       else
         object
       end
-    end
-
-    def [](category)
-      cache = "@@#{key}_#{category}_count"
-      if (self.class.class_variable_defined?(cache))
-        self.class.class_variable_get(cache)
-      else
-        self.class.class_variable_set(cache, super(category))
-      end
-    end
-
-    def self.general
-      self[GENERAL_FEATURE_NAME]
     end
 
     def self.objects(features, with_general = false)
@@ -38,18 +34,18 @@ module GreenMidget
     end
 
     def self.log_ratio
-      Math::log((self[GENERAL_FEATURE_NAME].probability_for(:spam))/(self[GENERAL_FEATURE_NAME].probability_for(:ham)))
+      self[GENERAL_FEATURE_NAME].log_ratio
     end
 
-    def self.total_count
-      self[GENERAL_FEATURE_NAME].total_count
+    def self.total
+      @@total ||= self[GENERAL_FEATURE_NAME].total
     end
 
     def probability_for(category)
-      self[category] / total_count
+      self[category] / total
     end
 
-    def total_count
+    def total
       CATEGORIES.inject(0) { |memo, category| memo += self[category] }
     end
 

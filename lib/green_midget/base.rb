@@ -17,16 +17,17 @@ module GreenMidget
       end
 
       GreenMidgetRecords.fetch_all(words)
+
       register_classification
 
       factor = log_ratio
       case
       when factor >= ACCEPT_ALTERNATIVE_MIN
-        ALTERNATIVE
+        ALTERNATIVE_RESPONSE
       when factor >= REJECT_ALTERNATIVE_MAX
         DUNNO
       else
-        NULL
+        NULL_RESPONSE
       end
     end
 

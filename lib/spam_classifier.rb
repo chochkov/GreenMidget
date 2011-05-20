@@ -1,7 +1,5 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-# TODO: do we need that here ?
 require 'active_record'
-
 require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'green_midget')
 require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'base')
 

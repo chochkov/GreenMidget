@@ -8,53 +8,45 @@ describe GreenMidget::Base do
   before(:each) do
     GreenMidgetRecords.delete_all
     [
-      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.last  }_count", :value => 701  },
-      {:key => "#{ Words::PREFIX    }this::#{          CATEGORIES.first }_count", :value => 11   },
-      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.last  }_count", :value => 9    },
-      {:key => "#{ Words::PREFIX    }test::#{          CATEGORIES.first }_count", :value => 71   },
-      {:key => "#{ Words::PREFIX    }goes::#{          CATEGORIES.last  }_count", :value => 90   },
-      {:key => "#{ Words::PREFIX    }goes::#{          CATEGORIES.first }_count", :value => 90   },
-      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.last  }_count", :value => 311  },
-      {:key => "#{ Words::PREFIX    }rid::#{           CATEGORIES.first }_count", :value => 290  },
-      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.last  }_count", :value => 222  },
-      {:key => "#{ Words::PREFIX    }dirty::#{         CATEGORIES.first }_count", :value => 45   },
-      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.last  }_count", :value => 11   },
-      {:key => "#{ Words::PREFIX    }spam::#{          CATEGORIES.first }_count", :value => 133  },
-      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.last  }_count", :value => 6    },
-      {:key => "#{ Words::PREFIX    }words::#{         CATEGORIES.first }_count", :value => 811  },
-      {:key => "#{ Words::PREFIX    }zero::#{          CATEGORIES.last  }_count", :value => 0    },
-      {:key => "#{ Words::PREFIX    }zero::#{          CATEGORIES.first }_count", :value => 0    },
-      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.last  }_count", :value => 440  },
-      {:key => "#{ Features::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 40   },
-      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 112  },
-      {:key => "#{ Features::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 9    },
-      {:key => "#{ Examples::PREFIX }any::#{           CATEGORIES.last  }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }any::#{           CATEGORIES.first }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }url_in_text::#{   CATEGORIES.last  }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }url_in_text::#{   CATEGORIES.first }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.last  }_count", :value => 1000 },
-      {:key => "#{ Examples::PREFIX }email_in_text::#{ CATEGORIES.first }_count", :value => 1000 },
+      {:key => "#{ Words.prefix    }this::#{          ALTERNATIVE  }_count", :value => 701  },
+      {:key => "#{ Words.prefix    }this::#{          NULL         }_count", :value => 11   },
+      {:key => "#{ Words.prefix    }test::#{          ALTERNATIVE  }_count", :value => 9    },
+      {:key => "#{ Words.prefix    }test::#{          NULL         }_count", :value => 71   },
+      {:key => "#{ Words.prefix    }goes::#{          ALTERNATIVE  }_count", :value => 90   },
+      {:key => "#{ Words.prefix    }goes::#{          NULL         }_count", :value => 90   },
+      {:key => "#{ Words.prefix    }rid::#{           ALTERNATIVE  }_count", :value => 311  },
+      {:key => "#{ Words.prefix    }rid::#{           NULL         }_count", :value => 290  },
+      {:key => "#{ Words.prefix    }dirty::#{         ALTERNATIVE  }_count", :value => 222  },
+      {:key => "#{ Words.prefix    }dirty::#{         NULL         }_count", :value => 45   },
+      {:key => "#{ Words.prefix    }spam::#{          ALTERNATIVE  }_count", :value => 11   },
+      {:key => "#{ Words.prefix    }spam::#{          NULL         }_count", :value => 133  },
+      {:key => "#{ Words.prefix    }words::#{         ALTERNATIVE  }_count", :value => 6    },
+      {:key => "#{ Words.prefix    }words::#{         NULL         }_count", :value => 811  },
+      {:key => "#{ Words.prefix    }zero::#{          ALTERNATIVE  }_count", :value => 0    },
+      {:key => "#{ Words.prefix    }zero::#{          NULL         }_count", :value => 0    },
+      {:key => "#{ Features.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 440  },
+      {:key => "#{ Features.prefix }url_in_text::#{   NULL         }_count", :value => 40   },
+      {:key => "#{ Features.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 112  },
+      {:key => "#{ Features.prefix }email_in_text::#{ NULL         }_count", :value => 9    },
+      {:key => "#{ Examples.prefix }any::#{           ALTERNATIVE  }_count", :value => 1000 },
+      {:key => "#{ Examples.prefix }any::#{           NULL         }_count", :value => 1000 },
+      {:key => "#{ Examples.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 1000 },
+      {:key => "#{ Examples.prefix }url_in_text::#{   NULL         }_count", :value => 1000 },
+      {:key => "#{ Examples.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 1000 },
+      {:key => "#{ Examples.prefix }email_in_text::#{ NULL         }_count", :value => 1000 },
     ].each do |entry|
       GreenMidgetRecords.create(entry[:key]).update_attribute(:value, entry[:value])
     end
   end
 
   # it "should calculate spam probability of 2.43e-06 for 'test goes words'" do
-  #   Tester.new('test goes words').log_ratio(:spam).round(5).
+  #   Tester.new('test goes words').log_ratio(ALTERNATIVE).round(5).
   #     should == Math::log(9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)).round(5)
   # end
 
-  describe 'GreenMidgetProbabilities#bayesian_factor' do
+  describe "#log_ratio" do
     it "should be smaller for a smaller number of spammy words" do
       Tester.new('this dirty test').log_ratio.should > Tester.new('this test').log_ratio
-    end
-  end
-
-  describe "#bayesian_factor" do
-    it "should add unknown words to the dictionary before classification" do
-      Tester.new('newword needs to pass heuristics').classify
-      Words['newword'][:spam].should == 0
-      Words['newword'][:spam].should == 0
     end
 
     it "considers 'test goes words' ham" do
@@ -84,45 +76,53 @@ describe GreenMidget::Base do
       Tester.new('test www.soundcloud.com').log_ratio
     end
 
-    it "should say DUNNO if it doesnt have neither :spam nor :ham score for a message" do
+    it "should say DUNNO if it doesnt have neither ALTERNATIVE nor NULL score for a message" do
       Tester.new('zero newword heuristicspass').log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
     end
 
     it "should say ALTERNATIVE if it has spam score for a message and doesn't have ham score for it" do
       a = Tester.new('nosuchword nowordsuch heuristicspass')
       a.log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
-      a.classify_as!(:spam)
+      a.classify_as!(ALTERNATIVE)
       a.log_ratio.should >= ACCEPT_ALTERNATIVE_MIN
     end
 
     it "should say NULL if it has ham score for a message and doesn't have spam score for it" do
       a = Tester.new('suchwordno nowordsuch heuristicspasss')
       a.log_ratio.between?(REJECT_ALTERNATIVE_MAX, ACCEPT_ALTERNATIVE_MIN).should be_true
-      a.classify_as!(:ham)
+      a.classify_as!(NULL)
       a.log_ratio.should < REJECT_ALTERNATIVE_MAX
+    end
+  end
+
+  describe "#classify" do
+    it "should add unknown words to the dictionary before classification" do
+      Tester.new('newword needs to pass heuristics').classify
+      Words['newword'][ALTERNATIVE].should == 0
+      Words['newword'][ALTERNATIVE].should == 0
     end
   end
 
   describe "#classify_as!" do
     it "should increase the index counts of the classified words" do
       lambda {
-        Tester.new('zero').classify_as!(:ham)
-      }.should change { Words['zero'][:ham] }.by(1)
+        Tester.new('zero').classify_as!(NULL)
+      }.should change { Words['zero'][NULL] }.by(1)
     end
     it "should increment the learning examples count for all features" do
       FEATURES.each do |feature|
         lambda {
-          Tester.new('zero').classify_as!(:ham)
-        }.should change { Examples[feature][:ham] }.by(1)
+          Tester.new('zero').classify_as!(NULL)
+        }.should change { Examples[feature][NULL] }.by(1)
       end
     end
     it "should not add new records for known keys" do
       a = Tester.new 'stuff unknown sofar'
       lambda {
-        a.classify_as! :spam
+        a.classify_as! ALTERNATIVE
       }.should change { GreenMidgetRecords.count }.by(6)
       lambda {
-        a.classify_as! :ham
+        a.classify_as! NULL
       }.should_not change { GreenMidgetRecords.count }
     end
   end
@@ -141,7 +141,7 @@ describe GreenMidget::Base do
       Tester.new('friend@soundcloud.com').words.should == []
     end
     it "should not consider parts of website url as individual words" do
-      Tester.new('www.myguy.com http://wearegeil.org').words.should == []
+      Tester.new('www.myguy.com http://weargeil.org').words.should == []
     end
   end
 
@@ -151,7 +151,7 @@ describe GreenMidget::Base do
   #     pending('todo')
   #   end
   #   it "throw an exception if no training examples were given, but it's asked for classification" do
-  #     # if GreenMidgetRecords.count(:spam) or GreenMidgetRecords.count(:ham) is 0.0 => throw an exception
+  #     # if GreenMidgetRecords.count(ALTERNATIVE) or GreenMidgetRecords.count(NULL) is 0.0 => throw an exception
   #     pending('todo')
   #   end
   # end

@@ -10,8 +10,8 @@ describe GreenMidget::Words do
 
   describe "self.record_keys" do
     it "takes an array of words and optionally a category, returns an array of corresponding record keys wrt category" do
-      Words.record_keys([ 'one' ]).should == [ "#{ Words.prefix }one::ham_count", "#{ Words.prefix }one::spam_count" ]
-      Words.record_keys([ 'one' ], CATEGORIES.first).should == [ "#{ Words.prefix }one::#{ CATEGORIES.first }_count" ]
+      Words.record_keys([ 'one' ]).should == [ "#{ Words.prefix }one::#{ NULL }_count", "#{ Words.prefix }one::#{ ALTERNATIVE }_count" ]
+      Words.record_keys([ 'one' ], NULL).should == [ "#{ Words.prefix }one::#{ NULL }_count" ]
     end
   end
 end

@@ -3,8 +3,7 @@ module GreenMidget
   class Countable
     include Constants
     attr_accessor :key
-
-    def self.prefix; '' end
+    class << self; attr_accessor :prefix end
 
     def initialize(key)
       @key = self.class.prefix + key
@@ -20,6 +19,10 @@ module GreenMidget
 
     def [](category)
       GreenMidgetRecords[record_key(category)].value.to_f
+    end
+
+    def log_ratio
+      Math::log(probability_for(ALTERNATIVE) / probability_for(NULL))
     end
 
     def increment(category)
