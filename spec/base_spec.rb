@@ -8,43 +8,42 @@ describe GreenMidget::Base do
   before(:each) do
     GreenMidgetRecords.delete_all
     [
-      {:key => "#{ Words.prefix    }this::#{          ALTERNATIVE  }_count", :value => 701  },
-      {:key => "#{ Words.prefix    }this::#{          NULL         }_count", :value => 11   },
-      {:key => "#{ Words.prefix    }test::#{          ALTERNATIVE  }_count", :value => 9    },
-      {:key => "#{ Words.prefix    }test::#{          NULL         }_count", :value => 71   },
-      {:key => "#{ Words.prefix    }goes::#{          ALTERNATIVE  }_count", :value => 90   },
-      {:key => "#{ Words.prefix    }goes::#{          NULL         }_count", :value => 90   },
-      {:key => "#{ Words.prefix    }rid::#{           ALTERNATIVE  }_count", :value => 311  },
-      {:key => "#{ Words.prefix    }rid::#{           NULL         }_count", :value => 290  },
-      {:key => "#{ Words.prefix    }dirty::#{         ALTERNATIVE  }_count", :value => 222  },
-      {:key => "#{ Words.prefix    }dirty::#{         NULL         }_count", :value => 45   },
-      {:key => "#{ Words.prefix    }spam::#{          ALTERNATIVE  }_count", :value => 11   },
-      {:key => "#{ Words.prefix    }spam::#{          NULL         }_count", :value => 133  },
-      {:key => "#{ Words.prefix    }words::#{         ALTERNATIVE  }_count", :value => 6    },
-      {:key => "#{ Words.prefix    }words::#{         NULL         }_count", :value => 811  },
-      {:key => "#{ Words.prefix    }zero::#{          ALTERNATIVE  }_count", :value => 0    },
-      {:key => "#{ Words.prefix    }zero::#{          NULL         }_count", :value => 0    },
-      {:key => "#{ Features.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 440  },
-      {:key => "#{ Features.prefix }url_in_text::#{   NULL         }_count", :value => 40   },
-      {:key => "#{ Features.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 112  },
-      {:key => "#{ Features.prefix }email_in_text::#{ NULL         }_count", :value => 9    },
-      {:key => "#{ Examples.prefix }any::#{           ALTERNATIVE  }_count", :value => 1000 },
-      {:key => "#{ Examples.prefix }any::#{           NULL         }_count", :value => 1000 },
-      {:key => "#{ Examples.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 1000 },
-      {:key => "#{ Examples.prefix }url_in_text::#{   NULL         }_count", :value => 1000 },
-      {:key => "#{ Examples.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 1000 },
-      {:key => "#{ Examples.prefix }email_in_text::#{ NULL         }_count", :value => 1000 },
+      {:key => "#{ Words.prefix    }this::#{          ALTERNATIVE  }_count", :value => 701.0  },
+      {:key => "#{ Words.prefix    }this::#{          NULL         }_count", :value => 11.0   },
+      {:key => "#{ Words.prefix    }test::#{          ALTERNATIVE  }_count", :value => 9.0    },
+      {:key => "#{ Words.prefix    }test::#{          NULL         }_count", :value => 71.0   },
+      {:key => "#{ Words.prefix    }goes::#{          ALTERNATIVE  }_count", :value => 90.0   },
+      {:key => "#{ Words.prefix    }goes::#{          NULL         }_count", :value => 90.0   },
+      {:key => "#{ Words.prefix    }rid::#{           ALTERNATIVE  }_count", :value => 311.0  },
+      {:key => "#{ Words.prefix    }rid::#{           NULL         }_count", :value => 290.0  },
+      {:key => "#{ Words.prefix    }dirty::#{         ALTERNATIVE  }_count", :value => 222.0  },
+      {:key => "#{ Words.prefix    }dirty::#{         NULL         }_count", :value => 45.0   },
+      {:key => "#{ Words.prefix    }spam::#{          ALTERNATIVE  }_count", :value => 11.0   },
+      {:key => "#{ Words.prefix    }spam::#{          NULL         }_count", :value => 133.0  },
+      {:key => "#{ Words.prefix    }words::#{         ALTERNATIVE  }_count", :value => 6.0    },
+      {:key => "#{ Words.prefix    }words::#{         NULL         }_count", :value => 811.0  },
+      {:key => "#{ Words.prefix    }zero::#{          ALTERNATIVE  }_count", :value => 0.0    },
+      {:key => "#{ Words.prefix    }zero::#{          NULL         }_count", :value => 0.0    },
+      {:key => "#{ Features.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 440.0  },
+      {:key => "#{ Features.prefix }url_in_text::#{   NULL         }_count", :value => 40.0   },
+      {:key => "#{ Features.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 112.0  },
+      {:key => "#{ Features.prefix }email_in_text::#{ NULL         }_count", :value => 9.0    },
+      {:key => "#{ Examples.prefix }any::#{           ALTERNATIVE  }_count", :value => 1000.0 },
+      {:key => "#{ Examples.prefix }any::#{           NULL         }_count", :value => 1000.0 },
+      {:key => "#{ Examples.prefix }url_in_text::#{   ALTERNATIVE  }_count", :value => 1000.0 },
+      {:key => "#{ Examples.prefix }url_in_text::#{   NULL         }_count", :value => 1000.0 },
+      {:key => "#{ Examples.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 1000.0 },
+      {:key => "#{ Examples.prefix }email_in_text::#{ NULL         }_count", :value => 1000.0 },
     ].each do |entry|
       GreenMidgetRecords.create(entry[:key]).update_attribute(:value, entry[:value])
     end
   end
 
-  # it "should calculate spam probability of 2.43e-06 for 'test goes words'" do
-  #   Tester.new('test goes words').log_ratio(ALTERNATIVE).round(5).
-  #     should == Math::log(9.0/1000 * 90.0/1000 * 6.0/1000 * 1000.0/(1000+1000)).round(5)
-  # end
-
   describe "#log_ratio" do
+    it "should be for 'this words'" do
+      Tester.new('this words').log_ratio.should == Math::log((701.0/1000) / (11.0/1000)) + Math::log((6.0/1000) / (811.0/1000)) + Math::log((1000.0/2000) / (1000.0/2000))
+    end
+
     it "should be smaller for a smaller number of spammy words" do
       Tester.new('this dirty test').log_ratio.should > Tester.new('this test').log_ratio
     end

@@ -17,7 +17,6 @@ module GreenMidget
       end
 
       GreenMidgetRecords.fetch_all(words)
-
       register_classification
 
       factor = log_ratio

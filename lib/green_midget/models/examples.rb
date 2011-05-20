@@ -3,7 +3,6 @@ module GreenMidget
   class Examples < Countable
     NO_EXAMPLES_GIVEN_ERROR = 'Training examples must be provided for all categories before classification.'
     GENERAL_FEATURE_NAME    = 'any'
-
     self.prefix             = 'examples_with_feature::'
 
     class_eval(<<-EVAL, __FILE__, __LINE__ + 1)

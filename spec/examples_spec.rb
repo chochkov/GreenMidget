@@ -53,7 +53,7 @@ describe GreenMidget::Examples do
   end
 
   describe "#probability_for" do
-    it "should return the probability of a feature falling into category as: Examples[feature][category] / (Examples[feature][:spam] + Examples[feature][:ham])" do
+    it "should return the probability of a feature falling into category as: Examples[feature][category] / (Examples[feature][ALTERNATIVE] + Examples[feature][NULL])" do
       GreenMidgetRecords.create(Examples['url_in_text'].record_key(NULL)).update_attribute(:value, 1000)
       GreenMidgetRecords.create(Examples['url_in_text'].record_key(ALTERNATIVE)).update_attribute(:value, 150)
       Examples['url_in_text'].probability_for(ALTERNATIVE).should == 150.0/(1000 + 150)

@@ -41,7 +41,7 @@ module GreenMidget
     end
 
     def increment
-      raise ArgumentError.new("#increment called on a non countable object!") unless key =~ /_count$/
+      raise "#increment called on a non countable object!" unless key =~ /_count$/
       self.value = value.to_f + 1
       self
     end
