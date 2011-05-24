@@ -25,10 +25,6 @@ module GreenMidget
       Math::log(probability_for(ALTERNATIVE) / probability_for(NULL))
     end
 
-    def increment(category)
-      GreenMidgetRecords[record_key(category)].increment
-    end
-
     def record_key(category)
       self.key + "::#{category}_count"
     end
