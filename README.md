@@ -95,6 +95,10 @@ If that's not enough too, you're welcome to [browse the code][kindergartener_git
 Final words and future work
 ----------
 
+Benchmarks = > data
+
+Efficiency = > for the sake of this article I ran a small off-production test to show some results on real data - I used 150 000 text items from records which we marked as good and records which we marked as not-the-best!
+
 We'll be next building our own SoundCloud extensions to Kindergartener and use it, so expect to hear more from the student! Meanwhile, I'll be happy to answer everything concerning the project so do feel free to get in touch.
 
 [kindergartener_github]: http://github.com/soundcloud/kindergartener "Github repository"

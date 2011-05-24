@@ -5,22 +5,26 @@ module GreenMidget
 
     def self.fetch_all(words = [])
       words_keys = Words.record_keys(words)
-      records = all(:conditions => [ "`key` IN (?) OR `key` LIKE '#{ Features.prefix }%' OR `key` LIKE '#{ Examples.prefix }%'", words_keys ])
+
+      records = connection.select_rows(
+        "SELECT `key`, `value` FROM %s WHERE `key` IN ('%s') OR `key` LIKE '%s' OR `key` LIKE '%s'" %
+        [ table_name, words_keys.join("', '"), Features.prefix + '%', Examples.prefix + '%' ]
+      )
 
       @@cache = records.inject({}) do |memo, record|
-        memo[record.key] = record
+        memo[record.first] = record.last
         memo
       end
 
       words_keys.inject(@@cache) do |memo, word|
-        memo[word] ||= new(word)
+        memo[word] ||= "0.0"
         memo
       end
     end
 
     def self.write!
       @@cache ||= {}
-      @@cache.map(&:last).map(&:save)
+      @@cache.map { |key, value| find_or_create_by_key(key).update_attribute(:value, value) }
       written_cache = @@cache
       @@cache = {}
       written_cache
@@ -42,6 +46,7 @@ module GreenMidget
 
     def increment
       raise "#increment called on a non countable object!" unless key =~ /_count$/
+      @@cache[key]
       self.value = value.to_f + 1
       self
     end
