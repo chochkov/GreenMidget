@@ -62,7 +62,7 @@ describe GreenMidget::Examples do
 
   describe "#no_examples?" do
     before(:each) do
-      GreenMidgetRecords.create(Examples['url_in_text'].record_key(NULL))
+      GreenMidgetRecords.create(Examples['url_in_text'].record_key(ALTERNATIVE))
       GreenMidgetRecords.create(Examples['url_in_text'].record_key(NULL))
       @object = Examples['url_in_text']
     end
@@ -72,13 +72,13 @@ describe GreenMidget::Examples do
     end
 
     it "should return true if spam_count or ham_count are zero" do
-      @object.increment(NULL)
+      GreenMidgetRecords.find_by_key(@object.record_key(NULL)).update_attribute(:value, 1)
       @object.no_examples?.should be_true
     end
 
     it "should should return false if both spam_count and ham_count are positive" do
-      @object.increment(NULL)
-      @object.increment(ALTERNATIVE)
+      GreenMidgetRecords.find_by_key(@object.record_key(NULL)).update_attribute(:value, 1)
+      GreenMidgetRecords.find_by_key(@object.record_key(ALTERNATIVE)).update_attribute(:value, 1)
       @object.no_examples?.should be_false
     end
   end
