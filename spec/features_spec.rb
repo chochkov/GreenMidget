@@ -10,12 +10,12 @@ describe GreenMidget::Features do
   end
 
   describe "#probability_for" do
-    it "should return Feature[feature] / TrainingExamples[feature]" do
-      GreenMidgetRecords.create(Features["url_in_text"].record_key(NULL)).update_attribute(:value, 20)
-      GreenMidgetRecords.create(Features["url_in_text"].record_key(ALTERNATIVE)).update_attribute(:value, 10)
+    it "should return Feature[feature] / Examples[feature]" do
+      GreenMidgetRecords.create(:key => Features["url_in_text"].record_key(NULL),        :value => 20  )
+      GreenMidgetRecords.create(:key => Features["url_in_text"].record_key(ALTERNATIVE), :value => 10  )
 
-      GreenMidgetRecords.create(Examples['url_in_text'].record_key(NULL)).update_attribute(:value, 100)
-      GreenMidgetRecords.create(Examples['url_in_text'].record_key(ALTERNATIVE)).update_attribute(:value, 1000)
+      GreenMidgetRecords.create(:key => Examples['url_in_text'].record_key(NULL),        :value => 100 )
+      GreenMidgetRecords.create(:key => Examples['url_in_text'].record_key(ALTERNATIVE), :value => 1000)
 
       Features['url_in_text'].probability_for(NULL).should == 20.0/100
       Features['url_in_text'].probability_for(ALTERNATIVE).should  == 10.0/1000

@@ -35,7 +35,7 @@ describe GreenMidget::Base do
       {:key => "#{ Examples.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 1000.0 },
       {:key => "#{ Examples.prefix }email_in_text::#{ NULL         }_count", :value => 1000.0 },
     ].each do |entry|
-      GreenMidgetRecords.create(entry[:key]).update_attribute(:value, entry[:value])
+      GreenMidgetRecords.create(entry)
     end
   end
 

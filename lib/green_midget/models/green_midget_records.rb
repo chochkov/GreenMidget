@@ -6,18 +6,18 @@ module GreenMidget
     def self.fetch_all(words = [])
       words_keys = Words.record_keys(words)
 
-      records = connection.select_rows(
+      pairs = connection.select_rows(
         "SELECT `key`, `value` FROM %s WHERE `key` IN ('%s') OR `key` LIKE '%s' OR `key` LIKE '%s'" %
-        [ table_name, words_keys.join("', '"), Features.prefix + '%', Examples.prefix + '%' ]
+        [ table_name, words_keys.join("', '"), "#{ Features.prefix }%", "#{ Examples.prefix }%" ]
       )
 
-      @@cache = records.inject({}) do |memo, record|
-        memo[record.first] = record.last
+      @@cache = pairs.inject({}) do |memo, pair|
+        memo[pair.first] = pair.last
         memo
       end
 
       words_keys.inject(@@cache) do |memo, word|
-        memo[word] ||= "0.0"
+        memo[word] ||= nil
         memo
       end
     end
@@ -33,24 +33,11 @@ module GreenMidget
     def self.[](key)
       key = key.to_s
       @@cache ||= {}
-      @@cache[key] || @@cache[key] = find_by_key(key) || @@cache[key] = new(key)
-    end
-
-    def self.new(key, value = nil)
-      super(:key => key, :value => value || 0.0)
+      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = nil
     end
 
     def self.increment(keys)
-      keys.each { |key| self[key].increment }
+      Array(keys).map { |key| @@cache[key] = @@cache[key].to_f + 1 }
     end
-
-    def increment
-      raise "#increment called on a non countable object!" unless key =~ /_count$/
-      @@cache[key]
-      self.value = value.to_f + 1
-      self
-    end
-
-    private_class_method :new
   end
 end
