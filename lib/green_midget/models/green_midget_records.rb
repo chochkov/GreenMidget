@@ -17,7 +17,7 @@ module GreenMidget
       end
 
       words_keys.inject(@@cache) do |memo, word|
-        memo[word] ||= nil
+        memo[word] ||= ''
         memo
       end
     end
@@ -33,7 +33,7 @@ module GreenMidget
     def self.[](key)
       key = key.to_s
       @@cache ||= {}
-      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = nil
+      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = ''
     end
 
     def self.increment(keys)

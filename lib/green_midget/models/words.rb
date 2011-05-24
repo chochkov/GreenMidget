@@ -4,9 +4,8 @@ module GreenMidget
     self.prefix = 'word::'
 
     def self.record_keys(words, category = nil)
-      categories = [ category || GreenMidget::CATEGORIES ].flatten
       words.map do |word|
-        categories.map{ |category| Words[word].record_key(category) }
+        Array(category || GreenMidget::CATEGORIES).map{ |category| Words[word].record_key(category) }
       end.flatten
     end
 

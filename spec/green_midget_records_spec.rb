@@ -15,11 +15,11 @@ describe GreenMidget::GreenMidgetRecords do
       GreenMidgetRecords.create(:key => phrase_key)
       GreenMidgetRecords.find_by_key(word_key).should == nil
       GreenMidgetRecords.find_by_key(phrase_key).should_not == nil
-      GreenMidgetRecords[phrase_key].should == GreenMidgetRecords.find_by_key(phrase_key).value
+      GreenMidgetRecords[phrase_key].should == ''
     end
     it "should add a {key => ''} to the cache if key not found in cache and in the data store" do
       key = Words['nonexisting'].record_key(NULL)
-      GreenMidgetRecords[key].should == nil
+      GreenMidgetRecords[key].should == ''
       GreenMidgetRecords.find_by_key(key).should == nil
     end
   end
