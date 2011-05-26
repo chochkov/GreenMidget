@@ -4,17 +4,17 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{spam_classifier}
-  s.version = "0.0.0"
+  s.name = %q{green_midget}
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["nikola chochkov"]
-  s.date = %q{2011-04-29}
-  s.description = %q{TODO: longer description of your gem}
-  s.email = %q{nikola@howkul.info}
+  s.date = %q{2011-05-26}
+  s.description = %q{}
+  s.email = %q{nikola@soundcloud.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
@@ -22,38 +22,46 @@ Gem::Specification.new do |s|
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
     "VERSION",
     "benchmark/benchmark.rb",
-    "examples/spam_classifier_url_detection_spec.rb",
-    "examples/spammable.rb",
+    "db/migrate/create_green_midget_records.rb",
+    "extensions/green_midget_check.rb",
+    "extensions/sample.rb",
+    "lib/green_midget/base.rb",
+    "lib/green_midget/constants.rb",
+    "lib/green_midget/green_midget.rb",
+    "lib/green_midget/logger.rb",
+    "lib/green_midget/models/countable.rb",
+    "lib/green_midget/models/examples.rb",
+    "lib/green_midget/models/features.rb",
+    "lib/green_midget/models/green_midget_records.rb",
+    "lib/green_midget/models/words.rb",
+    "lib/green_midget/url_detection.rb",
     "lib/spam_classifier.rb",
-    "lib/spam_classifier/spam_classifier.rb",
+    "lib/tasks/green_midget.rake",
     "spec/base_spec.rb",
+    "spec/examples_spec.rb",
     "spec/features_spec.rb",
-    "spec/spam_classification_index_spec.rb",
-    "spec/spam_classifier_spec.rb",
-    "spec/spammable_test.rb",
+    "spec/green_midget_records_spec.rb",
     "spec/spec_helper.rb",
-    "spec/training_examples_spec.rb",
+    "spec/tester.rb",
     "spec/words_spec.rb"
   ]
-  s.homepage = %q{http://github.com/chochkov/spam_classifier}
+  s.homepage = %q{http://github.com/soundcloud/green_midget}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.7.2}
-  s.summary = %q{TODO: one-line summary of your gem}
+  s.summary = %q{Bayesian Text Classifier}
   s.test_files = [
-    "examples/spam_classifier_url_detection_spec.rb",
-    "examples/spammable.rb",
     "spec/base_spec.rb",
+    "spec/examples_spec.rb",
     "spec/features_spec.rb",
-    "spec/spam_classification_index_spec.rb",
-    "spec/spam_classifier_spec.rb",
-    "spec/spammable_test.rb",
+    "spec/green_midget_records_spec.rb",
+    "spec/green_midget_url_detection_spec.rb",
     "spec/spec_helper.rb",
-    "spec/training_examples_spec.rb",
+    "spec/tester.rb",
     "spec/words_spec.rb"
   ]
 
@@ -62,12 +70,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activerecord>, [">= 0"])
+      s.add_runtime_dependency(%q<jberkel-mysql-ruby>, ["= 2.8.1"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
     else
       s.add_dependency(%q<activerecord>, [">= 0"])
+      s.add_dependency(%q<jberkel-mysql-ruby>, ["= 2.8.1"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -75,6 +85,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<activerecord>, [">= 0"])
+    s.add_dependency(%q<jberkel-mysql-ruby>, ["= 2.8.1"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])

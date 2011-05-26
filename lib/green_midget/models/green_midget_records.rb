@@ -22,12 +22,18 @@ module GreenMidget
       end
     end
 
-    def self.write!
-      @@cache ||= {}
-      @@cache.map { |key, value| find_or_create_by_key(key).update_attribute(:value, value) }
-      written_cache = @@cache
-      @@cache = {}
-      written_cache
+    def self.fetch_objects(keys)
+      records = all(:conditions => [ "`key` IN (?)", keys ])
+
+      @@objects = records.inject({}) do |memo, record|
+        memo[record.key] = record
+        memo
+      end
+
+      keys.inject(@@objects) do |memo, key|
+        memo[key] ||= new(:key => key, :value => '0.0')
+        memo
+      end
     end
 
     def self.[](key)
@@ -37,7 +43,9 @@ module GreenMidget
     end
 
     def self.increment(keys)
-      Array(keys).map { |key| @@cache[key] = @@cache[key].to_f + 1 }
+      fetch_objects(Array(keys))
+      @@objects.each { |key, record| record.update_attribute(:value, record.value.to_f + 1) }
+      @@objects = {}
     end
   end
 end

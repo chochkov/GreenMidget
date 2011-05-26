@@ -10,7 +10,7 @@ class Sample < GreenMidget::Base
   private
 
   def features
-    %w(regular_user)
+    %w(regular_user) + super
   end
 
   def regular_user?

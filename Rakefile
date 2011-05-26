@@ -12,12 +12,12 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "spam_classifier"
-  gem.homepage = "http://github.com/chochkov/spam_classifier"
+  gem.name = "green_midget"
+  gem.homepage = "http://github.com/soundcloud/green_midget"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "nikola@howkul.info"
+  gem.summary = %Q{Bayesian Text Classifier}
+  gem.description = %Q{}
+  gem.email = "nikola@soundcloud.com"
   gem.authors = ["nikola chochkov"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
@@ -44,7 +44,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "spam_classifier #{version}"
+  rdoc.title = "green_midget #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

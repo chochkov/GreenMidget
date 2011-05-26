@@ -3,7 +3,7 @@ require 'fileutils'
 require 'rake'
 require File.join(File.dirname(__FILE__), '..', '..', 'db', 'migrate', 'create_green_midget_records')
 
-namespace :spam_classifier do
+namespace :green_midget do
   desc "prepare this project for a world without spam"
   task :setup => :environment do
     include GreenMidget
@@ -13,11 +13,11 @@ namespace :spam_classifier do
     end
 
     keys = ["url_in_text", "email_in_text"].map do |feature|
-      [ Features.prefix + feature + '::spam_count', Features.prefix + feature + '::ham_count']
+      [ Features[feature].record_key(ALTERNATIVE), Features[feature].record_key(NULL) ]
     end.flatten
 
     keys += [Examples::GENERAL_FEATURE_NAME, "url_in_text", "email_in_text"].map do |feature|
-      [ Examples.prefix + feature + '::spam_count', Examples.prefix + feature + '::ham_count']
+      [ Examples[feature].record_key(ALTERNATIVE), Examples[feature].record_key(NULL) ]
     end.flatten
 
     puts '==  Creating records ==='

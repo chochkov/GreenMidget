@@ -31,15 +31,11 @@ module GreenMidget
     end
 
     def classify_as!(category)
-      category = category.to_sym
-      GreenMidgetRecords.fetch_all(words)
-
       keys = [ Words.objects(words), Features.objects(present_features), Examples.objects(features, true) ].flatten.map do |object|
         object.record_key(category)
       end
 
       GreenMidgetRecords.increment(keys)
-      GreenMidgetRecords.write!
       register_training
     end
 
@@ -84,13 +80,9 @@ module GreenMidget
       text.gsub(EXTERNAL_LINK_REGEX, '')
     end
 
-    # ------ Accessors --------
-
     def text
       @text || raise(NoMethodError.new('You should either implement the text method or provide an instance variable at this point.'))
     end
-
-    # ------ Probabilities Calculation --------
 
     def log_ratio
       Examples.log_ratio + words.map{ |word| Words[word].log_ratio }.sum + present_features.map{ |feature| Features[feature].log_ratio }.sum
