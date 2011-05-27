@@ -22,7 +22,14 @@ module GreenMidget
       end
     end
 
-    def self.fetch_objects(keys)
+    def self.[](key)
+      key = key.to_s
+      @@cache ||= {}
+      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = ''
+    end
+
+    def self.increment(keys)
+      keys = Array(keys)
       records = all(:conditions => [ "`key` IN (?)", keys ])
 
       @@objects = records.inject({}) do |memo, record|
@@ -34,16 +41,7 @@ module GreenMidget
         memo[key] ||= new(:key => key, :value => '0.0')
         memo
       end
-    end
 
-    def self.[](key)
-      key = key.to_s
-      @@cache ||= {}
-      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = ''
-    end
-
-    def self.increment(keys)
-      fetch_objects(Array(keys))
       @@objects.each { |key, record| record.update_attribute(:value, record.value.to_f + 1) }
       @@objects = {}
     end

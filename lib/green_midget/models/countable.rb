@@ -4,16 +4,14 @@ module GreenMidget
     include Constants
     attr_accessor :key
 
-    class << self
-      attr_accessor :prefix
+    class << self; attr_accessor :prefix end
 
-      def [](key)
-        new(key)
-      end
+    def self.[](key)
+      new(key)
+    end
 
-      def objects(keys)
-        keys.map { |key| new(key) }
-      end
+    def self.objects(keys)
+      keys.map { |key| new(key) }
     end
 
     def initialize(key)

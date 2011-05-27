@@ -56,7 +56,7 @@ module GreenMidget
       if respond_to?(method, true)
         send(method)
       else
-        raise NoMethodError.new("You must implement method #{method} or remove feature #{feature}.")
+        raise("You must implement method #{method} or remove feature #{feature}.")
       end
     end
 
@@ -81,7 +81,7 @@ module GreenMidget
     end
 
     def text
-      @text || raise(NoMethodError.new('You should either implement the text method or provide an instance variable at this point.'))
+      @text || raise('You should either implement the text method or provide an instance variable at this point.')
     end
 
     def log_ratio

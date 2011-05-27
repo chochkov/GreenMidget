@@ -14,4 +14,10 @@ describe GreenMidget::Words do
       Words.record_keys([ 'one' ], NULL).should == [ "#{ Words.prefix }one::#{ NULL }_count" ]
     end
   end
+
+  describe "#probability_for" do
+    it "should return the smoother constant if the word has zero examples" do
+      GreenMidgetRecords[Words['word'].record_key(ALTERNATIVE)].should == ''
+    end
+  end
 end

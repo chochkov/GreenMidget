@@ -74,15 +74,7 @@ describe GreenMidget::GreenMidgetRecords do
 
       lambda {
         GreenMidgetRecords.increment(record_key)
-      }.should change { GreenMidgetRecords[record_key].to_f }.by(1)
-
-      lambda {
-        GreenMidgetRecords.write!
       }.should change { GreenMidgetRecords.find_by_key(record_key).value.to_f }.by(1)
-
-      lambda {
-        GreenMidgetRecords.increment(record_key)
-      }.should_not change { GreenMidgetRecords.find_by_key(record_key).value.to_f }
     end
   end
 end

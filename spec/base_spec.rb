@@ -106,22 +106,22 @@ describe GreenMidget::Base do
     it "should increase the index counts of the classified words" do
       lambda {
         Tester.new('zero').classify_as!(NULL)
-      }.should change { Words['zero'][NULL] }.by(1)
+      }.should change { GreenMidgetRecords.find_by_key(Words['zero'].record_key(NULL)).value.to_f }.by(1)
     end
     it "should increment the learning examples count for all features" do
       FEATURES.each do |feature|
         lambda {
           Tester.new('zero').classify_as!(NULL)
-        }.should change { Examples[feature][NULL] }.by(1)
+        }.should change { GreenMidgetRecords.find_by_key(Examples[feature].record_key(NULL)).value.to_f }.by(1)
       end
     end
     it "should not add new records for known keys" do
       a = Tester.new 'stuff unknown sofar'
       lambda {
         a.classify_as! ALTERNATIVE
-      }.should change { GreenMidgetRecords.count }.by(6)
+      }.should change { GreenMidgetRecords.count }.by(3)
       lambda {
-        a.classify_as! NULL
+        a.classify_as! ALTERNATIVE
       }.should_not change { GreenMidgetRecords.count }
     end
   end
