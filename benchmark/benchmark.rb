@@ -10,11 +10,11 @@ MESSAGE_LENGTH          = 1000
 
 records_count_at_start  = GreenMidgetRecords.count
 
-def generate_text(message_length = 1, fixed_word_length = nil)
+def generate_text(message_length = 1)
   message ||= []
   while message.count < message_length do
     word = ''
-    (fixed_word_length || rand(7)+3).times { word += ('a'..'z').to_a[rand(26)] }
+    (rand(7) + 3).times { word += ('a'..'z').to_a[rand(26)] }
     message << word unless message.include?(word)
   end
   text = message.join(' ')
@@ -41,8 +41,6 @@ puts "Training unknown words:                 #{ (@train_alternative.sum.to_f/RE
 puts "Training known words:                   #{ (@train_null.sum.to_f/REPETITIONS).round(4) }"
 puts "-------------------------------"
 puts "Classification of known words:          #{ (@known_words.sum.to_f/REPETITIONS).round(4) }"
-puts "Data fetch of known words:              #{ (@known_words_fetch.sum.to_f/REPETITIONS).round(4) }"
 puts "-------------------------------"
 puts "Classification of unknown words:        #{ (@unknown_words.sum.to_f/REPETITIONS).round(4) }"
-puts "Data fetch of unknown words:            #{ (@unknown_words_fetch.sum.to_f/REPETITIONS).round(4) }"
 puts "-------------------------------"
