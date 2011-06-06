@@ -52,11 +52,11 @@ module GreenMidget
     end
 
     def feature_present?(feature)
-      method = :"#{feature}?"
+      method = :"#{ feature }?"
       if respond_to?(method, true)
         send(method)
       else
-        raise("You must implement method #{method} or remove feature #{feature}.")
+        raise("You must implement method #{ method } or remove feature #{ feature }.")
       end
     end
 
