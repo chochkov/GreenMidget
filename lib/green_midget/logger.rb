@@ -1,7 +1,6 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module GreenMidget
   module Logger
-
     private
 
     def register_classification

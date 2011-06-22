@@ -7,7 +7,7 @@ I'll put this in some perspective and say that we're now having daily text excha
 
 And while most of this runs smoother than Berliner beer on a SoundCloud friday, violations to our [Community guidelines][guidelines] are starting to be less and less of an exception. So I've been given the task to address this and build a system that progressively learns how to tell good community behaviour from less good - enter:
 
-Kindergartener
+Green Midget
 ----------
 
 Kindergartener is a trainable, feature-full Bayesian text classifier. Out of the box it's super straightforward to use, but it also offers easy customisation options. It's a Ruby gem and today we're open sourcing it, so you can start with it within a minute from its:
@@ -92,8 +92,27 @@ If the above functionality is not enough for you and you want to add custom logi
 
 If that's not enough too, you're welcome to [browse the code][kindergartener_github] and either extend more parts of it or simply make your own fork of the project.
 
-Final words and future work
+Benchmarking
 ----------
+
+1. GreenMidget is optimised for classification operations (`classify` method), on which it's very efficient. The results below were obtained from classification on randomly generated messages of length _1 000 words_ (that's _very_ long for SoundCloud). Since GreenMidget runs on a relational database (through ActiveRecord) by default the table size impacts data fetch and write:
+
+	* on ~ 10 000 table rows = 0.0703 seconds / message
+	* on ~ 100 000 rows = 0.2082 sec / message
+	* on ~ 500 000 rows = 0.6505 sec / message
+	* on ~ 1 000 000 rows = 0.6773 sec / messages
+
+2. Training operations (`classify_as!`) are, however, less performant because they invoke a database write per word. Under the same conditions as above, the training times of randomly generated messages follows:
+
+	* on ~ 10 000 table rows = 1.5984 seconds / message
+	* on ~ 100 000 rows = 0.1303 sec / message
+	* on ~ 500 000 rows = 1.7185 sec / message
+	* on ~ 1 000 000 rows = 2.5335 sec / message
+
+Classification Efficiency
+----------
+
+Trained on s
 
 Benchmarks = > data
 

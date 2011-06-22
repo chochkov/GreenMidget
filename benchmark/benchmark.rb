@@ -1,12 +1,12 @@
 include GreenMidget
 
-REPETITIONS             = 1
+TRAININGS               = 90
+CLASSIFICATIONS         = 1
+
 MESSAGE_LENGTH          = 1000
 
-@train_alternative      = []
-@train_null             = []
-@known_words            = []
-@unknown_words          = []
+@training_times         = []
+@classification_times   = []
 
 records_count_at_start  = GreenMidgetRecords.count
 
@@ -20,27 +20,21 @@ def generate_text(message_length = 1)
   text = message.join(' ')
 end
 
-REPETITIONS.times do
+TRAININGS.times do
   a = GreenMidgetCheck.new generate_text(MESSAGE_LENGTH)
-
-  @train_alternative   << Benchmark.measure{ a.classify_as! ALTERNATIVE }.real
-  @train_null          << Benchmark.measure{ a.classify_as! NULL        }.real
-
-  @known_words         << Benchmark.measure{ a.classify }.real
-
-  b = GreenMidgetCheck.new generate_text(MESSAGE_LENGTH)
-
-  @unknown_words       << Benchmark.measure{ b.classify }.real
+  @training_times       << Benchmark.measure{ a.classify_as! [ ALTERNATIVE, NULL ][rand(2)] }.real
 end
 
-puts "-------------------------------"
-puts "Average times in seconds from #{ REPETITIONS } repetitions and #{ MESSAGE_LENGTH } words per message:"
-puts "Number of records at start: #{ records_count_at_start } and at the end: #{ GreenMidgetRecords.count }"
-puts "-------------------------------"
-puts "Training unknown words:                 #{ (@train_alternative.sum.to_f/REPETITIONS).round(4) }"
-puts "Training known words:                   #{ (@train_null.sum.to_f/REPETITIONS).round(4) }"
-puts "-------------------------------"
-puts "Classification of known words:          #{ (@known_words.sum.to_f/REPETITIONS).round(4) }"
-puts "-------------------------------"
-puts "Classification of unknown words:        #{ (@unknown_words.sum.to_f/REPETITIONS).round(4) }"
-puts "-------------------------------"
+CLASSIFICATIONS.times do
+  a = GreenMidgetCheck.new generate_text(MESSAGE_LENGTH)
+  @classification_times << Benchmark.measure{ a.classify }.real
+end
+
+puts " ------------------------------- "
+puts " Average seconds from #{ TRAININGS } trainings and #{ CLASSIFICATIONS } classifications. #{ MESSAGE_LENGTH } words per message:"
+puts " Number of records at start: #{ records_count_at_start } and at the end: #{ GreenMidgetRecords.count }"
+puts " ------------------------------- "
+puts " Training times:                 #{ (@training_times.sum.to_f/TRAININGS).round(4) }"
+puts " ------------------------------- "
+puts " Classification times:           #{ (@classification_times.sum.to_f/CLASSIFICATIONS).round(4) }"
+puts " ------------------------------- "
