@@ -1,18 +1,16 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 require 'active_record'
-require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'green_midget')
-require File.join(File.expand_path(__FILE__), '..', 'green_midget', 'base')
-
-Dir["#{File.dirname(__FILE__)}/green_midget/models/*.rb"].each do |model|
-  require model
-end
-
-require File.join(File.expand_path(__FILE__), '..', '..', 'extensions', 'green_midget_check')
+require 'green_midget/green_midget'
+require 'green_midget/base'
+require 'green_midget/models/countable'
+require 'green_midget/models/examples'
+require 'green_midget/models/features'
+require 'green_midget/models/green_midget_records'
+require 'green_midget/models/words'
+require 'green_midget/extensions/classifier'
 
 if (classifier = Gem.searcher.find('green_midget'))
   path = classifier.full_gem_path
   Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
 end
 
-# This must go !
-ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'classifier_development_weird')
