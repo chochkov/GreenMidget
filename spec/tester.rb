@@ -3,7 +3,7 @@ class Tester < GreenMidget::Base
   attr_accessor :text
 
   def initialize(text = '')
-    self.text = text
+    @text = text
   end
 
   def words

@@ -27,7 +27,8 @@ module GreenMidget
     end
 
     def record_key(category)
-      self.key + "::#{category}_count"
+      "#{self.key}::#{category}_count"
     end
   end
 end
+
