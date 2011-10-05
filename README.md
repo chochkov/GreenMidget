@@ -1,6 +1,8 @@
 On Bayesian Classification
 ----------
 
+This project started during an internship at SoundCloud.
+
 Using SoundCloud's private messaging means that you can effectively reach out to everyone on the Cloud. On top of that, you have track commenting, groups posting, forum topics, track sharing - we care about your voice being heard! And read.
 
 I'll put this in some perspective and say that we're now having daily text exchange volume in the order of hundreds of thousands. And it's also rapidly going up.
@@ -23,48 +25,40 @@ to your Gemfile and run
 
     bundle install
 
-then add
+after which (so that you get the ActiveRecord backend ready):
 
-    require 'green_midget'
-
-to your Rakefile and run
-
-    rake green_midget:setup
+    rake green_midget:setup:active_record # creates a green_midget_records table and populate some entried there
 
 You're now done.
 
 How it works
 ----------
 
-GreenMidget
-
-GreenMidget is a learner, so you will only expect effective classification from it only once it has received sufficient training. Training it means providing examples of messages for the categor  
-
-
+GreenMidget learns to classify between two categories, so what you should first do is provide training examples for each of those two categories. See below.
 
 Use it
 ----------
 
-`GreenMidget` exposes two public methods as a start: `GreenMidget#classify_as!` and `GreenMidget#classify`. Let's do a three lines classification session and illustrate them
+`GreenMidget::Classifier` is the interaction class that is there after installation. It exposes two public instance methods as a start: `GreenMidget::Classifier#classify_as!` and `GreenMidget::Classifier#classify`. We'll do a three lines classification session and illustrate them.
 
-We'll start training `GreenMidget` with a spammy example
+We'll start training `GreenMidget` with a spammy example:
 
-    GreenMidget.new(known_spam_text).classify_as! :spam
+    GreenMidget::Classifier.new(known_spam_text).classify_as! :spam
 
 Similarly for legitimate examples
 
-    GreenMidget.new(known_legit_text).classify_as! :ham
+    GreenMidget::Classifier.new(known_legit_text).classify_as! :ham
 
-To get a classification decision we would
+After we've given to it some training data, we can start classifying unknown text:
 
-    decision = GreenMidget.new(new_text).classify
+    decision = GreenMidget::Classifier.new(new_text).classify
 
-`decision` is now one of `[-1, 0, 1]` meaning respectively 'No spam', 'Not enough evidence', 'Spam'.
+`decision` is now in `[ -1, 0, 1 ]` meaning respectively 'No spam', 'Not enough evidence', 'Spam'.
 
 Extend it
 ----------
 
-If the above functionality is not enough for you and you want to add custom logic to GreenMidget you can do that by extending the `GreenMidget::Base` class (check `extensions/sample.b` in the [code][green_midget_github] for an example):
+If the above functionality is not enough for you and you want to add custom logic to GreenMidget you can do that by extending the `GreenMidget::Base` class (check `lib/green_midget/extensions/sample.b` in the [code][green_midget_github] for an example):
 
 * Implement heuristics logic, which will directly classify incoming object as a given category. Example:
 
@@ -99,7 +93,9 @@ If that's not enough too, you're welcome to [browse the code][green_midget_githu
 Benchmarking
 ----------
 
-1. GreenMidget is optimised for classification operations (`classify` method), on which it's very efficient. The results below were obtained from classification on randomly generated messages of length _1 000 words_ (that's _very_ long for SoundCloud). Since GreenMidget runs on a relational database (through ActiveRecord) by default the table size impacts data fetch and write:
+Before moving on, let's say that `GreenMidget` is intended for asynchronous spam checks. Using ActiveRecord as backend has the benefit of wide support and easy setup, but as it also means that the time performance will become progressively worse the more training you provide.
+
+1. GreenMidget is optimised for classification operations (`classify` method), on which it's relatively efficient. The results below were obtained from classification on randomly generated messages of length _1 000 words_ (that's _very_ long for SoundCloud). Since GreenMidget runs on a relational database (through ActiveRecord) by default the table size impacts data fetch and write:
 
 	* on ~ 10 000 table rows = 0.0703 seconds / message
 	* on ~ 100 000 rows = 0.2082 sec / message
@@ -116,13 +112,7 @@ Benchmarking
 Classification Efficiency
 ----------
 
-Trained on s
+TODO: give test results; provide a web interface to a trained classifier using some of SoundCloud's spam and legit data; give production experience from DigitaleSeiten.
 
-Benchmarks = > data
-
-Efficiency = > for the sake of this article I ran a small off-production test to show some results on real data - I used 150 000 text items from records which we marked as good and records which we marked as not-the-best!
-
-We'll be next building our own SoundCloud extensions to GreenMidget and use it, so expect to hear more from the student! Meanwhile, I'll be happy to answer everything concerning the project so do feel free to get in touch.
-
-[green_midget_github]: http://github.com/chochkov/green_midget "Github repository"
+[green_midget_github]: http://github.com/chochkov/GreenMidget "Github repository"
 [guidelines]: http://soundcloud.com/community-guidelines "Community guidelines"
