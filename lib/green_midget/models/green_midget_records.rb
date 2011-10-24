@@ -7,7 +7,7 @@ module GreenMidget
       words_keys = Words.record_keys(words)
 
       pairs = connection.select_rows(
-        "SELECT `key`, `value` FROM %s WHERE `key` IN ('%s') OR `key` LIKE '%s' OR `key` LIKE '%s'" %
+        "SELECT key, value FROM %s WHERE key IN ('%s') OR key LIKE '%s' OR key LIKE '%s'" %
         [ table_name, words_keys.join("', '"), "#{ Features.prefix }%", "#{ Examples.prefix }%" ]
       )
 
@@ -25,12 +25,12 @@ module GreenMidget
     def self.[](key)
       key = key.to_s
       @@cache ||= {}
-      @@cache[key] || @@cache[key] = connection.select_value("SELECT `value` FROM #{ table_name } WHERE `key` = '#{ key }'") || @@cache[key] = ''
+      @@cache[key] || @@cache[key] = connection.select_value("SELECT value FROM #{ table_name } WHERE key = '#{ key }'") || @@cache[key] = ''
     end
 
     def self.increment(keys)
       keys = Array(keys)
-      records = all(:conditions => [ "`key` IN (?)", keys ])
+      records = all(:conditions => [ "key IN (?)", keys ])
 
       @@objects = records.inject({}) do |memo, record|
         memo[record.key] = record
@@ -47,3 +47,4 @@ module GreenMidget
     end
   end
 end
+
