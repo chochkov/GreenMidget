@@ -6,7 +6,7 @@ describe GreenMidget::Features do
 
   before(:each) do
     Records.delete_all
-    Records.class_variable_set("@@cache", {})
+    Records.cache = {}
   end
 
   describe "#probability_for" do

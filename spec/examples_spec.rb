@@ -6,7 +6,7 @@ describe GreenMidget::Examples do
 
   before(:each) do
     Records.delete_all
-    Records.class_variable_set("@@cache", {})
+    Records.cache = {}
   end
 
   describe "#[]()" do

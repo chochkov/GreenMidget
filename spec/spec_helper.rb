@@ -10,3 +10,7 @@ require 'green_midget/db/migrate/create_green_midget_records'
 GreenMidget::CreateGreenMidgetRecords.verbose = false
 GreenMidget::CreateGreenMidgetRecords.up
 
+GreenMidget::Records.class_eval do
+  cattr_accessor :cache
+end
+
