@@ -1,3 +1,6 @@
+[![Build
+Status](https://secure.travis-ci.org/chochkov/GreenMidget.png)](http://travis-ci.org/chochkov/GreenMidget)
+
 On Bayesian Classification
 ----------
 
