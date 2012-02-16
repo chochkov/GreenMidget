@@ -1,7 +1,6 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module GreenMidget
   class Countable
-    include Constants
     attr_accessor :key
 
     class << self; attr_accessor :prefix end

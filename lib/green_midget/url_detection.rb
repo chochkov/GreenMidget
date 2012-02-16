@@ -12,12 +12,12 @@ module GreenMidget
     private
 
     def urls
-      @text.scan(GreenMidget::URL_REGEX).flatten.reject(&:nil?)
+      @text.scan(URL_REGEX).flatten.reject(&:nil?)
     end
 
     def non_tolerated_urls
       urls.reject do |url|
-        url.to_s.downcase =~ GreenMidget::TOLERATED_URLS
+        url.to_s.downcase =~ TOLERATED_URLS
       end
     end
   end

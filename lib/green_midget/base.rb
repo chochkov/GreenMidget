@@ -1,12 +1,7 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-%w(logger constants url_detection).each do |file|
-  require File.join(File.dirname(__FILE__), file)
-end
-
 module GreenMidget
   class Base
     include Logger
-    include Constants
 
     def classify
       CATEGORIES.each do |category|

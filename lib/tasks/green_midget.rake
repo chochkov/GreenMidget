@@ -1,5 +1,4 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
-require 'fileutils'
 require 'rake'
 require 'green_midget/db/migrate/create_green_midget_records'
 

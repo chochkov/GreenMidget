@@ -34,7 +34,7 @@ describe GreenMidget::GreenMidgetRecords do
     end
     it "does a multi get on all words and keys" do
       cache = GreenMidgetRecords.fetch_all([ 'foo', 'bar' ])
-      cache['foo'].should.eql? GreenMidgetRecords.class_eval{new('foo')}
+      cache['foo'].should.eql? GreenMidgetRecords.class_eval{new(:key => 'foo')}
     end
     it "should fetch the system keys along with the given words" do
       key = Examples.prefix + Examples::GENERAL_FEATURE_NAME + "::#{ NULL }_count"
