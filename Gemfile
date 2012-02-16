@@ -10,7 +10,6 @@ end
 
 group :test do
   gem 'rspec'
-  gem 'guard-rspec'
   gem 'sqlite3'
   gem 'rake'
 end
