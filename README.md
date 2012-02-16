@@ -65,9 +65,9 @@ If the above functionality is not enough for you and you want to add custom logi
 
 * Implement heuristics logic, which will directly classify incoming object as a given category. Example:
 
-        def pass_ham_heuristics?
-          words.count > 5 || url_in_text?
-        end
+    def pass_ham_heuristics?
+      words.count > 5 || url_in_text?
+    end
 
   This method will be `true` for longer text or such that contains an external url. In this case the classifier would go on to the actual testing procedure. If `false`, however, the procedure will not be done and the classifier will return the ham category as a result. Note the native `GreenMidget::Base#words` and `GreenMidget::Base#url_in_text?`
 
@@ -77,21 +77,21 @@ If the above functionality is not enough for you and you want to add custom logi
 
   By default GreenMidget comes with two feature definitions `url_in_text` and `email_in_text`, but you can implement as many more as you want by writing a boolean method that checks for the feature:
 
-         def regular_user?
-           @user.sign_up_count > 10
-         end
+    def regular_user?
+      @user.sign_up_count > 10
+    end
 
   and then implement a `features` method that returns an array with your custom feature names:
 
-         def features
-           ['regular_user', .... ]
-         end
+    def features
+      ['regular_user', .... ]
+    end
 
   (do make sure that the array entry is the same as the name of the method that would be checking for this feature)
 
   The GreenMidget features definitions have more weight on shorter texts and less weight on longer thus they provide a ground source of evidence for GreenMidget's classification.
 
-If that's not enough too, you're welcome to [browse the code][green_midget_github] and either extend more parts of it or simply make your own fork of the project.
+If that's not enough too, see the Contribute section below.
 
 Benchmarking
 ----------
@@ -116,6 +116,19 @@ Classification Efficiency
 ----------
 
 TODO: give test results; provide a web interface to a trained classifier using some of SoundCloud's spam and legit data; give production experience from DigitaleSeiten.
+
+Contribute
+----------
+
+Let me know on any feedback or feature requests. If you want to hack on the
+code, just do that!
+
+  * Make a fork
+    * `git clone git@github.com:chochkov/GreenMidget.git`
+    * `bundle`
+    * `bundle exec rake` to run the specs
+  * Make a patch
+  * Send a Pull Request
 
 [green_midget_github]: http://github.com/chochkov/GreenMidget "Github repository"
 [guidelines]: http://soundcloud.com/community-guidelines "Community guidelines"
