@@ -123,10 +123,9 @@ Contribute
 Let me know on any feedback or feature requests. If you want to hack on the
 code, just do that!
 
-  * Make a fork
-    * `git clone git@github.com:chochkov/GreenMidget.git`
-    * `bundle`
-    * `bundle exec rake` to run the specs
+  * Make a fork and then:
+    * run `bundle` to setup dependencies
+    * and `bundle exec rake` to run the specs
   * Make a patch
   * Send a Pull Request
 
