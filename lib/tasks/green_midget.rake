@@ -8,8 +8,8 @@ namespace :green_midget do
     task :active_record => :environment do
       include GreenMidget
 
-      unless GreenMidgetRecords.table_exists?
-        CreateGreenMidgetRecords.up
+      unless Records.table_exists?
+        CreateRecords.up
       end
 
       keys = [ ALTERNATIVE, NULL ].map do |hypothesis|
@@ -24,8 +24,8 @@ namespace :green_midget do
 
       puts '==  Creating records ==='
       keys.each { |key|
-        unless GreenMidgetRecords.find_by_key(key)
-          GreenMidgetRecords.create(key)
+        unless Records.find_by_key(key)
+          Records.create(key)
           puts "--  Created #{key}"
         end
       }

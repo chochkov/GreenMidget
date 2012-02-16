@@ -5,7 +5,7 @@ describe GreenMidget::Words do
   include GreenMidget
 
   before(:each) do
-    GreenMidgetRecords.delete_all
+    Records.delete_all
   end
 
   describe "self.record_keys" do
@@ -17,7 +17,7 @@ describe GreenMidget::Words do
 
   describe "#probability_for" do
     it "should return the smoother constant if the word has zero examples" do
-      GreenMidgetRecords[Words['word'].record_key(ALTERNATIVE)].should == ''
+      Records[Words['word'].record_key(ALTERNATIVE)].should == ''
       Words['word'].probability_for(ALTERNATIVE).should == (1.0 / Examples.total)
     end
   end

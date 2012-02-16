@@ -12,7 +12,7 @@ MESSAGE_LENGTH          = 1000
 @training_times         = []
 @classification_times   = []
 
-records_count_at_start  = GreenMidgetRecords.count
+records_count_at_start  = Records.count
 
 def generate_text(message_length = 1)
   message ||= []
@@ -36,7 +36,7 @@ end
 
 puts " ------------------------------- "
 puts " Average seconds from #{TRAININGS} trainings and #{CLASSIFICATIONS} classifications. #{MESSAGE_LENGTH} words per message:"
-puts " Number of records at start: #{records_count_at_start} and at the end: #{GreenMidgetRecords.count}"
+puts " Number of records at start: #{records_count_at_start} and at the end: #{Records.count}"
 puts " ------------------------------- "
 puts " Training times:                 #{(@training_times.sum.to_f/TRAININGS).round(4)}"
 puts " ------------------------------- "

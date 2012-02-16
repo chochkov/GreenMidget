@@ -11,7 +11,7 @@ ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => '~/s
 
 ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'soundcloud_development_temp')
 
-@ham  = [ 'messages', 'comments', 'posts' ].map { |table| GreenMidgetRecords.find_by_sql("select body from #{table} limit 1500").to_a.inject([]) { |memo, hash| memo << hash["body"] } }
+@ham  = [ 'messages', 'comments', 'posts' ].map { |table| Records.find_by_sql("select body from #{table} limit 1500").to_a.inject([]) { |memo, hash| memo << hash["body"] } }
 
 ActiveRecord::Base.establish_connection(:adapter => 'mysql', :username => 'root', :password => 'root', :database => 'classifier_development_weird')
 #

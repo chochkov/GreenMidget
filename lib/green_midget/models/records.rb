@@ -1,6 +1,6 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module GreenMidget
-  class GreenMidgetRecords < ActiveRecord::Base
+  class Records < ActiveRecord::Base
     set_table_name :green_midget_records
 
     def self.fetch_all(words = [])

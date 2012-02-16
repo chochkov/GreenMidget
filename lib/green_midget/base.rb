@@ -11,7 +11,7 @@ module GreenMidget
         end
       end
 
-      GreenMidgetRecords.fetch_all(words)
+      Records.fetch_all(words)
       register_classification
 
       factor = log_ratio
@@ -30,7 +30,7 @@ module GreenMidget
         object.record_key(category)
       end
 
-      GreenMidgetRecords.increment(keys)
+      Records.increment(keys)
       register_training
     end
 

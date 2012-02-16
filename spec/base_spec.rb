@@ -6,7 +6,7 @@ describe GreenMidget::Base do
   include GreenMidget
 
   before(:each) do
-    GreenMidgetRecords.delete_all
+    Records.delete_all
     [
       {:key => "#{ Words.prefix    }this::#{          ALTERNATIVE  }_count", :value => 701.0  },
       {:key => "#{ Words.prefix    }this::#{          NULL         }_count", :value => 11.0   },
@@ -35,7 +35,7 @@ describe GreenMidget::Base do
       {:key => "#{ Examples.prefix }email_in_text::#{ ALTERNATIVE  }_count", :value => 1000.0 },
       {:key => "#{ Examples.prefix }email_in_text::#{ NULL         }_count", :value => 1000.0 },
     ].each do |entry|
-      GreenMidgetRecords.create(entry)
+      Records.create(entry)
     end
   end
 
@@ -106,23 +106,23 @@ describe GreenMidget::Base do
     it "should increase the index counts of the classified words" do
       lambda {
         Tester.new('zero').classify_as!(NULL)
-      }.should change { GreenMidgetRecords.find_by_key(Words['zero'].record_key(NULL)).value.to_f }.by(1)
+      }.should change { Records.find_by_key(Words['zero'].record_key(NULL)).value.to_f }.by(1)
     end
     it "should increment the learning examples count for all features" do
       FEATURES.each do |feature|
         lambda {
           Tester.new('zero').classify_as!(NULL)
-        }.should change { GreenMidgetRecords.find_by_key(Examples[feature].record_key(NULL)).value.to_f }.by(1)
+        }.should change { Records.find_by_key(Examples[feature].record_key(NULL)).value.to_f }.by(1)
       end
     end
     it "should not add new records for known keys" do
       a = Tester.new 'stuff unknown sofar'
       lambda {
         a.classify_as! ALTERNATIVE
-      }.should change { GreenMidgetRecords.count }.by(3)
+      }.should change { Records.count }.by(3)
       lambda {
         a.classify_as! ALTERNATIVE
-      }.should_not change { GreenMidgetRecords.count }
+      }.should_not change { Records.count }
     end
   end
 
@@ -150,7 +150,7 @@ describe GreenMidget::Base do
   #     pending('todo')
   #   end
   #   it "throw an exception if no training examples were given, but it's asked for classification" do
-  #     # if GreenMidgetRecords.count(ALTERNATIVE) or GreenMidgetRecords.count(NULL) is 0.0 => throw an exception
+  #     # if Records.count(ALTERNATIVE) or Records.count(NULL) is 0.0 => throw an exception
   #     pending('todo')
   #   end
   # end

@@ -11,7 +11,7 @@ class Tester < GreenMidget::Base
   end
 
   def log_ratio
-    GreenMidgetRecords.fetch_all(words)
+    Records.fetch_all(words)
     super
   end
 end

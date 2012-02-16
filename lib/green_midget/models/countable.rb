@@ -18,7 +18,7 @@ module GreenMidget
     end
 
     def [](category)
-      GreenMidgetRecords[record_key(category)].to_f
+      Records[record_key(category)].to_f
     end
 
     def log_ratio
