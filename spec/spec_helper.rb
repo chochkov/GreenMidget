@@ -10,6 +10,3 @@ require 'green_midget/db/migrate/create_green_midget_records'
 GreenMidget::CreateGreenMidgetRecords.verbose = false
 GreenMidget::CreateGreenMidgetRecords.up
 
-RSpec.configure do |config|
-end
-

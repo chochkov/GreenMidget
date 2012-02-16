@@ -9,23 +9,23 @@ namespace :green_midget do
       include GreenMidget
 
       unless Records.table_exists?
-        CreateRecords.up
+        CreateGreenMidgetRecords.up
       end
 
       keys = [ ALTERNATIVE, NULL ].map do |hypothesis|
-        [
-          "feature::url_in_text::#{hypothesis}_count",
-          "feature::email_in_text::#{hypothesis}_count",
-          "examples::any::#{hypothesis}_count",
-          "examples::url_in_text::#{hypothesis}_count",
-          "examples::email_in_text::#{hypothesis}_count",
-        ]
+        FEATURES.map do |feature|
+          [
+            "#{Features.prefix}#{feature}::#{hypothesis}_count",
+            "#{Examples.prefix}#{feature}::#{hypothesis}_count",
+            "#{Examples.prefix}any::#{hypothesis}_count",
+          ]
+        end
       end.flatten
 
       puts '==  Creating records ==='
       keys.each { |key|
         unless Records.find_by_key(key)
-          Records.create(key)
+          Records.create(:key => key, :value => 0)
           puts "--  Created #{key}"
         end
       }

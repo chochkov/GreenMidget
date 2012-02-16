@@ -1,69 +1,60 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
 module GreenMidget
   class Base
-    include Logger
+    include DefaultFeatures
+    include HeuristicChecks
 
+    # Get classification for unknown messages based on history
+    #
+    #   Examples:
+    #
+    #   result = GreenMidget::Classifier.new(unknown_text)
+    #   # result is now in -1, 0, 1 meaning respectively
+    #   # no_spam, no_answer, spam
+    #
     def classify
-      CATEGORIES.each do |category|
-        if respond_to?(:"pass_#{category}_heuristics?") && send(:"pass_#{category}_heuristics?")
-          classify_as!(category)
-          return HYPOTHESES[category]
-        end
+      if respond_to?(:heuristic_checks, true) && response = heuristic_checks
+        return response
       end
 
+      # load all relevant records in one go
       Records.fetch_all(words)
-      register_classification
 
       factor = log_ratio
       case
       when factor >= ACCEPT_ALTERNATIVE_MIN
-        ALTERNATIVE_RESPONSE
+        RESPONSES[ALTERNATIVE]
       when factor >= REJECT_ALTERNATIVE_MAX
-        DUNNO
+        RESPONSES[:dunno]
       else
-        NULL_RESPONSE
+        RESPONSES[NULL]
       end
     end
 
+    # Public method used to train the classifier with examples
+    # belonging to a known `category`.
+    # 
+    #   Examples:
+    #
+    #   classifier = GreenMidget::Classifier.new(known_good_text)
+    #   classifier.classify_as!(:ham)
+    #   # increases the chances for similar text to pass the check next time
+    #
+    #   classifier = GreenMidget::Classifier.new(known_spam_text)
+    #   classifier.classify_as!(:spam)
+    #   # increases the chances for similar text to fail the check next time
+    #
     def classify_as!(category)
-      keys = [ Words.objects(words), Features.objects(present_features), Examples.objects(features, true) ].flatten.map do |object|
-        object.record_key(category)
-      end
+      keys = [
+        Words.objects(words),
+        Features.objects(present_features),
+        Examples.objects(features, true)
+      ].flatten.map { |object| object.record_key(category) }
 
-      Records.increment(keys)
-      register_training
+      !! Records.increment(keys)
     end
 
     private
-
-    # ------ Features --------
-
-    def features
-      FEATURES
-    end
-
-    def present_features
-      features.select { |feature| feature_present?(feature) }
-    end
-
-    def feature_present?(feature)
-      method = :"#{ feature }?"
-      if respond_to?(method, true)
-        send(method)
-      else
-        raise("You must implement method #{ method } or remove feature #{ feature }.")
-      end
-    end
-
-    def url_in_text?
-      UrlDetection.new(text).any?
-    end
-
-    def email_in_text?
-      text.scan(EMAIL_REGEX).size > 0
-    end
-
-    # ------ Words --------
 
     def words
       strip_external_links.scan(WORDS_SPLIT_REGEX).uniq.
@@ -76,11 +67,24 @@ module GreenMidget
     end
 
     def text
-      @text || raise('You should either implement the text method or provide an instance variable at this point.')
+      @text || raise(NoTextFound)
     end
 
+    # Calculate the log ratio between the scores for both categories.
+    # It takes into account the Examples counts ( ie. how much history
+    # there is for each category ), the Words count ( i.e. how much history for
+    # each word in each category ) and if any other Features are there -
+    # accounts for them as well.
     def log_ratio
-      Examples.log_ratio + words.map{ |word| Words[word].log_ratio }.sum + present_features.map{ |feature| Features[feature].log_ratio }.sum
+      result = Examples.log_ratio
+
+      result += words.map{ |word| Words[word].log_ratio }.sum
+
+      if respond_to?(:features, true)
+        result += present_features.map{ |feature| Features[feature].log_ratio }.sum
+      end
+
+      result
     end
   end
 end

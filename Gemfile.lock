@@ -51,7 +51,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (>= 3.2.0)
+  activerecord
   guard-rspec
   pry
   pry-doc

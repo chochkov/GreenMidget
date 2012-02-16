@@ -1,25 +1,26 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
+#
+# A model for Examples used in GreenMidget. Examples represent the counts for
+# how much training GreenMidget received in each respective category.
+#
+#   Example['url_present'][:spam]
+#   # the number of spam training examples having an URL
+#
+#   Example['any'][:ham]
+#   # the number of total Ham training examples 
+#
+# See Countable
+#
 module GreenMidget
   class Examples < Countable
-    NO_EXAMPLES_GIVEN_ERROR = 'Training examples must be provided for all categories before classification.'
     GENERAL_FEATURE_NAME    = 'any'
     self.prefix             = 'examples_with_feature::'
-
-    class_eval(<<-EVAL, __FILE__, __LINE__ + 1)
-      def self.#{ ALTERNATIVE }                                         # def self.ham
-        @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]       #   @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]
-      end                                                               # end
-
-      def self.#{ NULL }                                                # def self.spam
-        @@null ||= self[GENERAL_FEATURE_NAME][NULL]                     #   @@null ||= self[GENERAL_FEATURE_NAME][NULL]
-      end                                                               # end
-    EVAL
 
     def self.[](feature)
       object = super(feature)
 
       if object.no_examples? && (feature == GENERAL_FEATURE_NAME)
-        raise NO_EXAMPLES_GIVEN_ERROR
+        raise NoExamplesGiven
       elsif object.no_examples?
         super GENERAL_FEATURE_NAME
       else
@@ -51,5 +52,17 @@ module GreenMidget
     def no_examples?
       CATEGORIES.inject(1) { |memo, category| memo *= self[category] } == 0
     end
+
+    # These methods store the total ham and spam examples count
+    #
+    class_eval(<<-EVAL, __FILE__, __LINE__ + 1)
+      def self.#{ ALTERNATIVE }                                         # def self.ham
+        @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]       #   @@alternative ||= self[GENERAL_FEATURE_NAME][ALTERNATIVE]
+      end                                                               # end
+
+      def self.#{ NULL }                                                # def self.spam
+        @@null ||= self[GENERAL_FEATURE_NAME][NULL]                     #   @@null ||= self[GENERAL_FEATURE_NAME][NULL]
+      end                                                               # end
+    EVAL
   end
 end

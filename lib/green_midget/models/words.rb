@@ -1,4 +1,7 @@
 # Copyright (c) 2011, SoundCloud Ltd., Nikola Chochkov
+#
+# A model for Words used in GreenMidget. See Countable
+#
 module GreenMidget
   class Words < Countable
     self.prefix = 'word::'
