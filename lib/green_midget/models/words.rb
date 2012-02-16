@@ -5,7 +5,7 @@ module GreenMidget
 
     def self.record_keys(words, category = nil)
       words.map do |word|
-        Array(category || GreenMidget::CATEGORIES).map{ |category| Words[word].record_key(category) }
+        Array(category || CATEGORIES).map{ |category| Words[word].record_key(category) }
       end.flatten
     end
 

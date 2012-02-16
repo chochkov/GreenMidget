@@ -2,8 +2,7 @@
 module GreenMidget
   class Countable
     attr_accessor :key
-
-    class << self; attr_accessor :prefix end
+    class_attribute :prefix
 
     def self.[](key)
       new(key)

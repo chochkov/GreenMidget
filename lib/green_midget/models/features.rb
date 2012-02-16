@@ -8,7 +8,7 @@ module GreenMidget
     end
 
     def feature
-      key.gsub(/(^#{ self.class.prefix })|(::\w+_count$)/, '')
+      key.gsub(/(^#{self.class.prefix})|(::\w+_count$)/, '')
     end
   end
 end
