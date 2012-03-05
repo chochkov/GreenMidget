@@ -179,7 +179,7 @@ It's only trained on the word occurrences of a total of 9000 messages (4500 of
 each spam and ham).
 
 During the development tests at SoundCloud, with those features in place, we
-achieved more than 98% correct classification of spam examples using GreenMidget.
+achieved more than 98% correct classification of spam objects using GreenMidget.
 
 Thanks
 ----------
