@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
+
+require 'net/http'
+require 'green_midget'
+
+def say(what); puts "==> #{what}"; end
+
+if (text = ARGV[0]) && ARGV.size == 1
+  say "This will check your input against some of SoundCloud\'s history of spaammmm..\n"
+  say "(run without arguments for more info)\n\n"
+
+  text =
+    if File.exist?(text)
+      IO.readlines(text, '').join
+    else
+      text
+    end
+
+  uri = URI("http://freezing-earth-5798.herokuapp.com/?q=#{URI.escape(text)}")
+  response = ''
+
+  begin
+    response = Net::HTTP.get(uri).to_i
+  rescue
+    say 'An error connecting to Heroku. How about your internets?'
+    exit 1
+  end
+
+  case response
+  when 1
+    say 'Hm.. It looks not so good! ( looks like spam )'
+  when 0
+    say 'Well, i cant really tell - it could be either'
+  when -1
+    say 'And.. it sounds ok..'
+  else
+    say 'An unknown error stroke!'
+  end
+else
+  say "Checks for spam!\n\n"
+  puts <<-TEXT
+This tool accesses an online GreenMidget service trained on 4500
+examples of public spam messages or track comments that were posted on
+SoundCloud. You can use it to classify your texts against it.
+
+  Examples:
+
+  greenmidget 'buy cheap bags online'
+  greenmidget 'upload cool tracks online'
+  greenmidget potential_spam.txt
+
+Notice: This service is only used as an illustration to the GreenMidget
+classifier, however its training is limited and it lacks even basic
+features, that GreenMidget could provide.
+
+This is not actually in use at SoundCloud!
+
+read more on: http://github.com/chochkov/greenmidget
+  TEXT
+end
