@@ -6,6 +6,7 @@
 #
 module GreenMidget
   class Records < ActiveRecord::Base
+    attr_accessible :key, :value
     self.table_name = :green_midget_records
 
     # Does a multi-get of the necessary count records for the given words.
