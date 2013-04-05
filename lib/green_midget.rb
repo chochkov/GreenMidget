@@ -20,7 +20,7 @@ require 'green_midget/errors/no_examples_given'
 
 require 'green_midget/extensions/classifier'
 
-if classifier = Gem.searcher.find('green_midget')
+if classifier = Gem::Specification.find_by_name('green_midget')
   path = classifier.full_gem_path
   Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
 end
