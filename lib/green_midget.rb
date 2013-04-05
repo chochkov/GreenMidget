@@ -20,8 +20,17 @@ require 'green_midget/errors/no_examples_given'
 
 require 'green_midget/extensions/classifier'
 
-if classifier = Gem::Specification.find_by_name('green_midget')
+classifier =
+  if Gem::Specification.methods.include?(:find_by_name)
+    begin
+      Gem::Specification.find_by_name('green_midget')
+    rescue Gem::LoadError
+    end
+  else
+    Gem.available?('green_midget')
+  end
+
+if classifier
   path = classifier.full_gem_path
   Dir["#{path}/lib/tasks/*.rake"].each { |ext| load ext }
 end
-
