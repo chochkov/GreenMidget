@@ -20,6 +20,7 @@
 module GreenMidget
   class Countable
     attr_accessor :key
+
     class_attribute :prefix
 
     def initialize(key)
@@ -47,4 +48,3 @@ module GreenMidget
     end
   end
 end
-

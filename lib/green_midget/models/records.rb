@@ -59,4 +59,3 @@ module GreenMidget
     end
   end
 end
-

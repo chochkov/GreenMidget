@@ -25,9 +25,14 @@ classifier =
     begin
       Gem::Specification.find_by_name('green_midget')
     rescue Gem::LoadError
+      nil
     end
   else
-    Gem.available?('green_midget')
+    if Gem.available?('green_midget')
+      Gem.searcher.find('green_midget')
+    else
+      nil
+    end
   end
 
 if classifier
