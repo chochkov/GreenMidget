@@ -87,16 +87,22 @@ We'll do a three lines classification session and illustrate them.
 
 We'll start training `GreenMidget` with a spammy example:
 
-    GreenMidget::Classifier.new(known_spam_text).classify_as! :spam
+```ruby
+GreenMidget::Classifier.new(known_spam_text).classify_as! :spam
+```
 
 Similarly for legitimate examples
 
-    GreenMidget::Classifier.new(known_legit_text).classify_as! :ham
+```ruby
+GreenMidget::Classifier.new(known_legit_text).classify_as! :ham
+```
 
 After we've given to it some training data, we can start classifying unknown
 text:
 
-    decision = GreenMidget::Classifier.new(new_text).classify
+```ruby
+decision = GreenMidget::Classifier.new(new_text).classify
+```
 
 `decision` is now in `[ -1, 0, 1 ]` meaning respectively 'No spam',
 'Not enough evidence', 'Spam'.
@@ -112,9 +118,11 @@ for an example):
 * Implement heuristics logic, which will directly classify incoming object as a
 given category. Example:
 
+    ```ruby
     def pass_ham_heuristics?
       words.count > 5 || url_in_text?
     end
+    ```
 
   This method will be `true` for longer text or such that contains an external
   url. In this case the classifier would go on to the actual testing procedure.
@@ -137,17 +145,19 @@ eg. user's data or specific text features.
   boolean method that checks for the feature:
 
   ```ruby
-    def regular_user?
-      @user.sign_up_count > 10
-    end
-   ```
+  def regular_user?
+    @user.sign_up_count > 10
+  end
+  ```
 
   and then implement a `features` method that returns an array with your custom
   feature names:
 
-    def features
-      ['regular_user', .... ]
-    end
+  ```ruby
+  def features
+    ['regular_user', .... ]
+  end
+  ```
 
   (do make sure that the array entry is the same as the name of the method that
   would be checking for this feature)
