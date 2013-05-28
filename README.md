@@ -102,10 +102,8 @@ text:
 
 ```ruby
 decision = GreenMidget::Classifier.new(new_text).classify
+# decision is either -1, 0 or 1 meaning 'Not spam', 'No evidence', 'Spam'
 ```
-
-`decision` is now in `[ -1, 0, 1 ]` meaning respectively 'No spam',
-'Not enough evidence', 'Spam'.
 
 Extend it
 ----------
@@ -144,20 +142,20 @@ eg. user's data or specific text features.
   `email_in_text`, but you can implement as many more as you want by writing a
   boolean method that checks for the feature:
 
-  ```ruby
-  def regular_user?
-    @user.sign_up_count > 10
-  end
-  ```
+    ```ruby
+    def regular_user?
+      @user.sign_up_count > 10
+    end
+    ```
 
   and then implement a `features` method that returns an array with your custom
   feature names:
 
-  ```ruby
-  def features
-    ['regular_user', .... ]
-  end
-  ```
+    ```ruby
+    def features
+      ['regular_user', .... ]
+    end
+    ```
 
   (do make sure that the array entry is the same as the name of the method that
   would be checking for this feature)
